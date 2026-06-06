@@ -140,7 +140,7 @@ Aucun module tiers Odoo n'est requis (pas de `account`, `sale`, etc.).
 
 ## Auteur
 **Moussa Ben Youssouf TRAORE**
-- *Dans le cadre du projet de fin de Module ODOO*
+- *Projet réalisé dans le cadre du projet de fin de Module de création de module ODOO Institut Ivoirien de Technologie (IIT) — Abidjan, juin 2026*
 
 
 ## Instructeur
