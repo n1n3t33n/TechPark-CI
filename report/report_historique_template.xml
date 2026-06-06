@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="template_historique_maintenance">
+<t t-call="web.html_container">
+<t t-call="web.external_layout">
+<div class="page">
+
+    <h2 class="text-primary text-center mb-2">
+        Historique des Maintenances
+    </h2>
+    <p class="text-center text-muted">
+        TECHPARK CI — Généré le
+        <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>
+    </p>
+    <hr/>
+
+    <!-- Résumé -->
+    <div class="row mb-3">
+        <div class="col-4 text-center p-2" style="background:#e8f4fd; border-radius:8px; margin:4px;">
+            <h4 class="text-primary"><t t-esc="len(docs)"/></h4>
+            <small>Total interventions</small>
+        </div>
+        <div class="col-4 text-center p-2" style="background:#e8f9e8; border-radius:8px; margin:4px;">
+            <h4 class="text-success">
+                <t t-esc="'%.1f' % sum(docs.mapped('duree_heures'))"/> h
+            </h4>
+            <small>Durée totale</small>
+        </div>
+        <div class="col-4 text-center p-2" style="background:#fde8e8; border-radius:8px; margin:4px;">
+            <h4 class="text-danger">
+                <t t-esc="'{:,.0f}'.format(sum(docs.mapped('cout')))"/> FCFA
+            </h4>
+            <small>Coût total</small>
+        </div>
+    </div>
+
+    <!-- Tableau -->
+    <table class="table table-sm table-bordered table-striped" style="font-size:11px;">
+        <thead style="background:#343a40; color:white;">
+            <tr>
+                <th>Objet</th>
+                <th>Équipement</th>
+                <th>Type</th>
+                <th>Technicien</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Durée (h)</th>
+                <th>Coût (FCFA)</th>
+                <th>État</th>
+            </tr>
+        </thead>
+        <tbody>
+            <t t-foreach="docs" t-as="doc">
+            <tr>
+                <td><t t-esc="doc.name"/></td>
+                <td><t t-esc="doc.equipement_id.name if doc.equipement_id else ''"/></td>
+                <td><t t-esc="doc.type_intervention"/></td>
+                <td><t t-esc="doc.technicien_id.name if doc.technicien_id else 'N/A'"/></td>
+                <td><t t-field="doc.date_debut"/></td>
+                <td><t t-field="doc.date_fin"/></td>
+                <td><t t-esc="'%.1f' % doc.duree_heures"/></td>
+                <td><t t-esc="'{:,.0f}'.format(doc.cout)"/></td>
+                <td><t t-esc="doc.state"/></td>
+            </tr>
+            </t>
+        </tbody>
+        <!-- Total -->
+        <tfoot style="background:#f8f9fa; font-weight:bold;">
+            <tr>
+                <td colspan="6" class="text-right">TOTAL</td>
+                <td><t t-esc="'%.1f' % sum(docs.mapped('duree_heures'))"/></td>
+                <td><t t-esc="'{:,.0f}'.format(sum(docs.mapped('cout')))"/></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+</div>
+</t>
+</t>
+</template>
+</odoo>

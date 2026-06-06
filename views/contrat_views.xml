@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_it_contrat_form" model="ir.ui.view">
+        <field name="name">it.contrat.form</field>
+        <field name="model">it.contrat</field>
+        <field name="arch" type="xml">
+            <form string="Contrat fournisseur">
+                <header>
+                    <button name="action_resilier" string="Résilier" type="object"
+                            class="btn-danger" invisible="state == 'resilie'"/>
+                    <button name="action_export_contrats_excel"
+                            string="Export contrats Excel" type="object"
+                            class="btn-secondary"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="actif,expire,renouvele,resilie"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Intitulé du contrat"/></h1>
+                    </div>
+                    <group>
+                        <group string="Informations générales">
+                            <field name="reference"/>
+                            <field name="type_contrat"/>
+                            <field name="fournisseur_id"/>
+                            <field name="equipement_id"/>
+                        </group>
+                        <group string="Validité et coût">
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="montant"/>
+                            <field name="jours_restants"/>
+                            <field name="expire"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_it_contrat_tree" model="ir.ui.view">
+        <field name="name">it.contrat.list</field>
+        <field name="model">it.contrat</field>
+        <field name="arch" type="xml">
+            <list string="Contrats"
+                  decoration-danger="expire==True"
+                  decoration-warning="jours_restants &lt; 60 and not expire">
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="type_contrat"/>
+                <field name="fournisseur_id"/>
+                <field name="equipement_id"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="montant"/>
+                <field name="jours_restants"/>
+                <field name="expire"/>
+                <field name="state" widget="badge"
+                       decoration-success="state=='actif'"
+                       decoration-danger="state=='expire'"
+                       decoration-info="state=='renouvele'"
+                       decoration-muted="state=='resilie'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_it_contrat_search" model="ir.ui.view">
+        <field name="name">it.contrat.search</field>
+        <field name="model">it.contrat</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un contrat">
+                <field name="name"/>
+                <field name="fournisseur_id"/>
+                <field name="equipement_id"/>
+                <filter string="Actifs"  name="actif"  domain="[('state','=','actif')]"/>
+                <filter string="Expirés" name="expire" domain="[('expire','=',True)]"/>
+                <filter string="Expirant dans 60j" name="bientot"
+                        domain="[('jours_restants','&lt;=',60),('expire','=',False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter string="Fournisseur" name="by_fournisseur" context="{'group_by':'fournisseur_id'}"/>
+                    <filter string="Type"        name="by_type"        context="{'group_by':'type_contrat'}"/>
+                    <filter string="État"        name="by_state"       context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_it_contrat" model="ir.actions.act_window">
+        <field name="name">Contrats fournisseurs</field>
+        <field name="res_model">it.contrat</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_it_contrat_search"/>
+    </record>
+
+</odoo>

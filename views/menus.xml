@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── MENU RACINE ──────────────────────────────────────────────────── -->
+    <menuitem id="menu_it_parc_root"
+              name="IT Parc"
+              sequence="10"
+              action="action_it_parc_dashboard"
+              groups="it_parc.group_it_technicien,it_parc.group_it_manager"/>
+
+    <!-- ─── NIVEAU 2 : Parc ───────────────────────────────────────────────── -->
+    <menuitem id="menu_it_parc_equipements"
+              name="Parc informatique"
+              parent="menu_it_parc_root"
+              sequence="10"/>
+
+    <menuitem id="menu_it_equipement"
+              name="Équipements"
+              parent="menu_it_parc_equipements"
+              action="action_it_equipement"
+              sequence="10"/>
+
+    <menuitem id="menu_it_affectation"
+              name="Historique des affectations"
+              parent="menu_it_parc_equipements"
+              action="action_it_affectation"
+              sequence="20"/>
+
+    <!-- ─── NIVEAU 2 : Maintenance ───────────────────────────────────────── -->
+    <menuitem id="menu_it_parc_maintenance"
+              name="Maintenance"
+              parent="menu_it_parc_root"
+              sequence="20"/>
+
+    <menuitem id="menu_it_intervention"
+              name="Interventions"
+              parent="menu_it_parc_maintenance"
+              action="action_it_intervention"
+              sequence="10"/>
+
+    <!-- ─── NIVEAU 2 : Contrats ──────────────────────────────────────────── -->
+    <menuitem id="menu_it_parc_contrats"
+              name="Contrats"
+              parent="menu_it_parc_root"
+              sequence="30"/>
+
+    <menuitem id="menu_it_contrat"
+              name="Contrats fournisseurs"
+              parent="menu_it_parc_contrats"
+              action="action_it_contrat"
+              sequence="10"/>
+
+    <!-- ─── NIVEAU 2 : Alertes ───────────────────────────────────────────── -->
+    <menuitem id="menu_it_parc_alertes"
+              name="Alertes"
+              parent="menu_it_parc_root"
+              sequence="40"/>
+
+    <menuitem id="menu_it_alerte"
+              name="Toutes les alertes"
+              parent="menu_it_parc_alertes"
+              action="action_it_alerte"
+              sequence="10"/>
+
+    <!-- ─── NIVEAU 2 : Dashboard (sera complété à l'étape OWL) ──────────── -->
+    <menuitem id="menu_it_parc_dashboard"
+          name="Dashboard"
+          parent="menu_it_parc_root"
+          action="action_it_parc_dashboard"
+          sequence="1"/>
+
+
+<!-- ─── ACTIONS WIZARD dans les menus ────────────────────────────────── -->
+    <menuitem id="menu_it_import_csv"
+              name="Importer des équipements (CSV)"
+              parent="menu_it_parc_equipements"
+              action="action_wizard_import_csv"
+              sequence="30"
+              groups="it_parc.group_it_manager"/>
+
+    <menuitem id="menu_it_scan_alertes"
+              name="Scanner les alertes manuellement"
+              parent="menu_it_parc_alertes"
+              action="action_wizard_scan_alertes"
+              sequence="20"
+              groups="it_parc.group_it_manager"/>
+              
+</odoo>

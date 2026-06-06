@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wizard_scan_alertes_form" model="ir.ui.view">
+        <field name="name">wizard.scan.alertes.form</field>
+        <field name="model">wizard.scan.alertes</field>
+        <field name="arch" type="xml">
+            <form string="Scan des alertes">
+                <sheet>
+                    <group string="Paramètre du scan">
+                        <field name="delai_jours"
+                               help="Alertes déclenchées pour les échéances dans moins de X jours"/>
+                    </group>
+                    <group string="Résultat" invisible="not scan_effectue">
+                        <field name="resultat" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_scanner" string="Lancer le scan"
+                            type="object" class="btn-primary"
+                            invisible="scan_effectue"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_scan_alertes" model="ir.actions.act_window">
+        <field name="name">Scanner les alertes</field>
+        <field name="res_model">wizard.scan.alertes</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

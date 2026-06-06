@@ -1,0 +1,270 @@
+/* ─── Dashboard IT Parc ──────────────────────────────────────────────────── */
+
+.o_it_parc_dashboard {
+    padding: 24px;
+    background: #f4f6f9;
+    min-height: 100vh;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* En-tête */
+.o_dashboard_header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #dee2e6;
+}
+.o_dashboard_header h2 {
+    color: #1F4E79;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* Chargement */
+.o_dashboard_loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+/* ─── KPI Cards ──────────────────────────────────────────────────────────── */
+.o_kpi_row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.o_kpi_row_wide {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.o_kpi_card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 5px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.o_kpi_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.o_kpi_wide { padding: 24px 28px; }
+
+.o_kpi_icon {
+    font-size: 28px;
+    opacity: 0.85;
+    min-width: 36px;
+    text-align: center;
+}
+
+.o_kpi_value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+.o_kpi_value_sm { font-size: 22px; }
+
+.o_kpi_label {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Couleurs des cartes */
+.o_kpi_blue   { border-color: #1F4E79; color: #1F4E79; }
+.o_kpi_green  { border-color: #28a745; color: #28a745; }
+.o_kpi_orange { border-color: #fd7e14; color: #fd7e14; }
+.o_kpi_red    { border-color: #dc3545; color: #dc3545; }
+.o_kpi_purple { border-color: #6f42c1; color: #6f42c1; }
+.o_kpi_teal   { border-color: #20c997; color: #20c997; }
+.o_kpi_dark   { border-color: #343a40; color: #343a40; }
+.o_kpi_indigo { border-color: #6610f2; color: #6610f2; }
+
+/* ─── Graphiques ─────────────────────────────────────────────────────────── */
+.o_dashboard_graphs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.o_graph_card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.o_graph_title {
+    color: #343a40;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Donut SVG */
+.o_donut_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.o_donut_svg {
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+}
+.o_donut_segment {
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+.o_donut_segment:hover { opacity: 0.8; }
+
+.o_donut_center_label {
+    font-size: 10px;
+    fill: #6c757d;
+    font-weight: 500;
+}
+.o_donut_center_value {
+    font-size: 18px;
+    fill: #1F4E79;
+    font-weight: 700;
+}
+
+.o_donut_legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.o_legend_item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+.o_legend_dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Graphique barres vertical */
+.o_bar_chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 180px;
+    padding-bottom: 28px;
+    position: relative;
+}
+.o_bar_item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+}
+.o_bar_value_label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 4px;
+}
+.o_bar_track {
+    width: 100%;
+    height: 140px;
+    background: #e9ecef;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+.o_bar_fill {
+    width: 100%;
+    background: linear-gradient(180deg, #2E75B6, #1F4E79);
+    border-radius: 6px 6px 0 0;
+    transition: height 0.6s ease;
+    min-height: 3px;
+}
+.o_bar_label {
+    font-size: 10px;
+    color: #6c757d;
+    text-align: center;
+    margin-top: 6px;
+    white-space: nowrap;
+}
+
+/* ─── Tables ─────────────────────────────────────────────────────────────── */
+.o_dashboard_tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.o_table_card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.o_dashboard_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.o_dashboard_table thead tr {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+.o_dashboard_table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.o_dashboard_table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f3f5;
+    color: #343a40;
+}
+.o_dashboard_table tbody tr:hover {
+    background: #f8f9fa;
+}
+.o_dashboard_table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-success  { background: #d4edda; color: #155724; }
+.badge-warning  { background: #fff3cd; color: #856404; }
+.badge-danger   { background: #f8d7da; color: #721c24; }
+.badge-info     { background: #d1ecf1; color: #0c5460; }
+.badge-secondary{ background: #e2e3e5; color: #383d41; }

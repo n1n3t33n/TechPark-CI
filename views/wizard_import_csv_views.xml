@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wizard_import_csv_form" model="ir.ui.view">
+        <field name="name">wizard.import.csv.form</field>
+        <field name="model">wizard.import.csv</field>
+        <field name="arch" type="xml">
+            <form string="Import CSV d'équipements">
+                <sheet>
+                    <group string="Format attendu du CSV">
+                        <div colspan="2" class="alert alert-info">
+                            <p>Colonnes <b>obligatoires</b> : <code>name</code>, <code>categorie</code>, <code>site</code></p>
+                            <p>Colonnes <b>optionnelles</b> : <code>marque</code>, <code>modele</code>, <code>numero_serie</code>, <code>valeur_achat</code>, <code>date_fin_garantie</code></p>
+                            <p>Valeurs <code>categorie</code> : poste_travail, serveur, imprimante, reseau, telephone, autre</p>
+                            <p>Valeurs <code>site</code> : abidjan_cocody, abidjan_plateau, bouake</p>
+                        </div>
+                    </group>
+                    <group>
+                        <field name="fichier_csv" widget="binary" filename="nom_fichier"/>
+                        <field name="nom_fichier" invisible="1"/>
+                    </group>
+                    <group string="Résultat" invisible="not import_effectue">
+                        <field name="resultat" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_importer" string="Lancer l'import"
+                            type="object" class="btn-primary"
+                            invisible="import_effectue"/>
+                    <button string="Fermer" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_import_csv" model="ir.actions.act_window">
+        <field name="name">Import CSV équipements</field>
+        <field name="res_model">wizard.import.csv</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

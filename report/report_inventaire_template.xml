@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="template_inventaire">
+<t t-call="web.html_container">
+<t t-call="web.external_layout">
+<div class="page">
+
+    <h2 class="text-primary text-center mb-2">
+        Inventaire du Parc Informatique
+    </h2>
+    <p class="text-center text-muted">
+        TECHPARK CI — Généré le
+        <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>
+    </p>
+    <hr/>
+
+    <!-- Résumé statistiques -->
+    <div class="row mb-3">
+        <div class="col-3 text-center p-2" style="background:#e8f4fd; border-radius:8px; margin:4px;">
+            <h4 class="text-primary"><t t-esc="len(docs)"/></h4>
+            <small>Total équipements</small>
+        </div>
+        <div class="col-3 text-center p-2" style="background:#e8f9e8; border-radius:8px; margin:4px;">
+            <h4 class="text-success">
+                <t t-esc="len(docs.filtered(lambda e: e.state == 'affecte'))"/>
+            </h4>
+            <small>Affectés</small>
+        </div>
+        <div class="col-3 text-center p-2" style="background:#fff3cd; border-radius:8px; margin:4px;">
+            <h4 class="text-warning">
+                <t t-esc="len(docs.filtered(lambda e: e.state == 'maintenance'))"/>
+            </h4>
+            <small>En maintenance</small>
+        </div>
+        <div class="col-3 text-center p-2" style="background:#fde8e8; border-radius:8px; margin:4px;">
+            <h4 class="text-danger">
+                <t t-esc="len(docs.filtered(lambda e: e.garantie_expiree))"/>
+            </h4>
+            <small>Garantie expirée</small>
+        </div>
+    </div>
+
+    <!-- Tableau inventaire -->
+    <table class="table table-sm table-bordered table-striped" style="font-size:11px;">
+        <thead style="background:#343a40; color:white;">
+            <tr>
+                <th>Réf.</th>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Marque</th>
+                <th>N° Série</th>
+                <th>Site</th>
+                <th>Employé</th>
+                <th>Département</th>
+                <th>Fin garantie</th>
+                <th>État</th>
+            </tr>
+        </thead>
+        <tbody>
+            <t t-foreach="docs" t-as="doc">
+            <tr t-attf-style="background-color: #{'#fff3cd' if doc.jours_garantie_restants &lt; 30 and not doc.garantie_expiree else '#fde8e8' if doc.garantie_expiree else ''}">
+                <td><t t-esc="doc.reference"/></td>
+                <td><t t-esc="doc.name"/></td>
+                <td><t t-esc="doc.categorie"/></td>
+                <td><t t-esc="doc.marque or ''"/></td>
+                <td><t t-esc="doc.numero_serie or ''"/></td>
+                <td><t t-esc="doc.site"/></td>
+                <td><t t-esc="doc.employe_id.name if doc.employe_id else ''"/></td>
+                <td><t t-esc="doc.departement_id.name if doc.departement_id else ''"/></td>
+                <td><t t-field="doc.date_fin_garantie"/></td>
+                <td><t t-esc="doc.state"/></td>
+            </tr>
+            </t>
+        </tbody>
+    </table>
+
+    <!-- Légende -->
+    <div class="mt-2" style="font-size:10px;">
+        <span style="background:#fde8e8; padding:2px 8px;">■</span> Garantie expirée &#160;
+        <span style="background:#fff3cd; padding:2px 8px;">■</span> Garantie &lt; 30 jours
+    </div>
+
+</div>
+</t>
+</t>
+</template>
+</odoo>

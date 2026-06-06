@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Catégorie du module -->
+        <record id="module_category_it_parc" model="ir.module.category">
+            <field name="name">IT Parc</field>
+            <field name="description">Gestion du parc informatique</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- Groupe IT Technicien -->
+        <record id="group_it_technicien" model="res.groups">
+            <field name="name">IT Technicien</field>
+            <field name="category_id" ref="module_category_it_parc"/>
+            <field name="comment">Peut consulter les équipements et créer des interventions.</field>
+        </record>
+
+        <!-- Groupe IT Manager -->
+        <record id="group_it_manager" model="res.groups">
+            <field name="name">IT Manager</field>
+            <field name="category_id" ref="module_category_it_parc"/>
+            <field name="implied_ids" eval="[(4, ref('group_it_technicien'))]"/>
+            <field name="comment">Accès complet à tous les objets du module.</field>
+        </record>
+
+    </data>
+</odoo>

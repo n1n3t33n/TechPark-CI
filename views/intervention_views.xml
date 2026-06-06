@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_it_intervention_form" model="ir.ui.view">
+        <field name="name">it.intervention.form</field>
+        <field name="model">it.intervention</field>
+        <field name="arch" type="xml">
+            <form string="Intervention">
+                <header>
+                    <button name="action_demarrer" string="Démarrer" type="object"
+                            class="btn-primary" invisible="state != 'planifie'"/>
+                    <button name="action_terminer" string="Terminer" type="object"
+                            class="btn-success" invisible="state != 'en_cours'"/>
+                    <button name="action_annuler"  string="Annuler"  type="object"
+                            class="btn-danger"  invisible="state in ('termine','annule')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="planifie,en_cours,termine"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Objet de l'intervention"/></h1>
+                    </div>
+                    <group>
+                        <group string="Équipement concerné">
+                            <field name="equipement_id"/>
+                            <field name="type_intervention"/>
+                            <field name="technicien_id"/>
+                        </group>
+                        <group string="Planification">
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="duree_heures"/>
+                            <field name="cout"/>
+                        </group>
+                    </group>
+                    <group string="Rapport d'intervention">
+                        <field name="rapport" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_it_intervention_tree" model="ir.ui.view">
+        <field name="name">it.intervention.list</field>
+        <field name="model">it.intervention</field>
+        <field name="arch" type="xml">
+            <list string="Interventions"
+                  decoration-info="state=='planifie'"
+                  decoration-warning="state=='en_cours'"
+                  decoration-success="state=='termine'"
+                  decoration-danger="state=='annule'">
+                <field name="name"/>
+                <field name="equipement_id"/>
+                <field name="type_intervention"/>
+                <field name="technicien_id"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="duree_heures"/>
+                <field name="cout"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_it_intervention_calendar" model="ir.ui.view">
+        <field name="name">it.intervention.calendar</field>
+        <field name="model">it.intervention</field>
+        <field name="arch" type="xml">
+            <calendar string="Calendrier des interventions"
+                      date_start="date_debut"
+                      date_stop="date_fin"
+                      color="technicien_id"
+                      mode="month">
+                <field name="name"/>
+                <field name="equipement_id"/>
+                <field name="technicien_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_it_intervention_search" model="ir.ui.view">
+        <field name="name">it.intervention.search</field>
+        <field name="model">it.intervention</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher une intervention">
+                <field name="name"/>
+                <field name="equipement_id"/>
+                <field name="technicien_id"/>
+                <filter string="Planifiées"  name="planifie"   domain="[('state','=','planifie')]"/>
+                <filter string="En cours"    name="en_cours"   domain="[('state','=','en_cours')]"/>
+                <filter string="Terminées"   name="termine"    domain="[('state','=','termine')]"/>
+                <filter string="Correctives" name="corrective" domain="[('type_intervention','=','corrective')]"/>
+                <filter string="Préventives" name="preventive" domain="[('type_intervention','=','preventive')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter string="Équipement" name="by_equipement" context="{'group_by':'equipement_id'}"/>
+                    <filter string="Technicien" name="by_technicien" context="{'group_by':'technicien_id'}"/>
+                    <filter string="Type"       name="by_type"       context="{'group_by':'type_intervention'}"/>
+                    <filter string="État"       name="by_state"      context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_it_intervention" model="ir.actions.act_window">
+        <field name="name">Interventions</field>
+        <field name="res_model">it.intervention</field>
+        <field name="view_mode">list,calendar,form</field>
+        <field name="search_view_id" ref="view_it_intervention_search"/>
+    </record>
+
+</odoo>
