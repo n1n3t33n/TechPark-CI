@@ -58,17 +58,17 @@
         </thead>
         <tbody>
             <t t-foreach="docs" t-as="doc">
-            <tr t-attf-style="background-color: #{'#fff3cd' if doc.jours_garantie_restants &lt; 30 and not doc.garantie_expiree else '#fde8e8' if doc.garantie_expiree else ''}">
+            <tr t-attf-style="background-color: #{'#fde8e8' if doc.garantie_expiree else '#fff3cd' if doc.date_fin_garantie and doc.jours_garantie_restants &lt; 30 else ''}">
                 <td><t t-esc="doc.reference"/></td>
                 <td><t t-esc="doc.name"/></td>
-                <td><t t-esc="doc.categorie"/></td>
+                <td><t t-esc="dict(poste_travail='Poste de travail', serveur='Serveur', imprimante='Imprimante', reseau='Équipement réseau', telephone='Téléphone IP', autre='Autre').get(doc.categorie, doc.categorie or '')"/></td>
                 <td><t t-esc="doc.marque or ''"/></td>
                 <td><t t-esc="doc.numero_serie or ''"/></td>
-                <td><t t-esc="doc.site"/></td>
+                <td><t t-esc="dict(abidjan_cocody='Abidjan - Cocody', abidjan_plateau='Abidjan - Plateau', bouake='Bouaké').get(doc.site, doc.site or '')"/></td>
                 <td><t t-esc="doc.employe_id.name if doc.employe_id else ''"/></td>
                 <td><t t-esc="doc.departement_id.name if doc.departement_id else ''"/></td>
-                <td><t t-field="doc.date_fin_garantie"/></td>
-                <td><t t-esc="doc.state"/></td>
+                <td><t t-esc="str(doc.date_fin_garantie) if doc.date_fin_garantie else 'N/A'"/></td>
+                <td><t t-esc="dict(brouillon='Brouillon', affecte='Affecté', maintenance='En maintenance', retire='Retiré').get(doc.state, doc.state or '')"/></td>
             </tr>
             </t>
         </tbody>

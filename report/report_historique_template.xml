@@ -54,20 +54,20 @@
             <tr>
                 <td><t t-esc="doc.name"/></td>
                 <td><t t-esc="doc.equipement_id.name if doc.equipement_id else ''"/></td>
-                <td><t t-esc="doc.type_intervention"/></td>
+                <td><t t-esc="dict(corrective='Corrective', preventive='Préventive').get(doc.type_intervention, doc.type_intervention or '')"/></td>
                 <td><t t-esc="doc.technicien_id.name if doc.technicien_id else 'N/A'"/></td>
-                <td><t t-field="doc.date_debut"/></td>
-                <td><t t-field="doc.date_fin"/></td>
+                <td><t t-esc="str(doc.date_debut)[:10] if doc.date_debut else 'N/A'"/></td>
+                <td><t t-esc="str(doc.date_fin)[:10] if doc.date_fin else 'N/A'"/></td>
                 <td><t t-esc="'%.1f' % doc.duree_heures"/></td>
                 <td><t t-esc="'{:,.0f}'.format(doc.cout)"/></td>
-                <td><t t-esc="doc.state"/></td>
+                <td><t t-esc="dict(planifie='Planifiée', en_cours='En cours', termine='Terminée', annule='Annulée').get(doc.state, doc.state or '')"/></td>
             </tr>
             </t>
         </tbody>
         <!-- Total -->
         <tfoot style="background:#f8f9fa; font-weight:bold;">
             <tr>
-                <td colspan="6" class="text-right">TOTAL</td>
+                <td colspan="6" class="text-end">TOTAL</td>
                 <td><t t-esc="'%.1f' % sum(docs.mapped('duree_heures'))"/></td>
                 <td><t t-esc="'{:,.0f}'.format(sum(docs.mapped('cout')))"/></td>
                 <td></td>
