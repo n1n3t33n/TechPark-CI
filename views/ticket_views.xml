@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_it_ticket_list" model="ir.ui.view">
+        <field name="name">it.ticket.list</field>
+        <field name="model">it.ticket</field>
+        <field name="arch" type="xml">
+            <list string="Tickets"
+                  decoration-danger="priority == '3'"
+                  decoration-warning="state in ('new','assigned','in_progress')"
+                  decoration-success="state == 'done'">
+                <field name="name"/>
+                <field name="subject"/>
+                <field name="partner_id"/>
+                <field name="site_id"/>
+                <field name="equipement_id"/>
+                <field name="technicien_id"/>
+                <field name="priority" widget="badge"/>
+                <field name="state" widget="badge"/>
+                <field name="date_deadline"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_it_ticket_form" model="ir.ui.view">
+        <field name="name">it.ticket.form</field>
+        <field name="model">it.ticket</field>
+        <field name="arch" type="xml">
+            <form string="Ticket support">
+                <header>
+                    <button name="action_assign" string="Assigner" type="object" class="btn-primary"
+                            invisible="state != 'new'"/>
+                    <button name="action_start" string="Démarrer" type="object" class="btn-primary"
+                            invisible="state not in ('new','assigned')"/>
+                    <button name="action_done" string="Résoudre" type="object" class="btn-success"
+                            invisible="state not in ('assigned','in_progress')"/>
+                    <button name="action_cancel" string="Annuler" type="object" class="btn-secondary"
+                            invisible="state in ('done','cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,assigned,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="subject"/>
+                        <h1><field name="subject"/></h1>
+                    </div>
+                    <group>
+                        <group string="Client">
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="site_id"/>
+                            <field name="equipement_id"/>
+                        </group>
+                        <group string="Traitement">
+                            <field name="priority"/>
+                            <field name="technicien_id"/>
+                            <field name="date_deadline"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Demande">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                        <page string="Résolution">
+                            <field name="resolution" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_it_ticket_search" model="ir.ui.view">
+        <field name="name">it.ticket.search</field>
+        <field name="model">it.ticket</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un ticket">
+                <field name="name"/>
+                <field name="subject"/>
+                <field name="partner_id"/>
+                <field name="site_id"/>
+                <field name="equipement_id"/>
+                <filter string="Ouverts" name="open" domain="[('state','in',('new','assigned','in_progress'))]"/>
+                <filter string="Critiques" name="critical" domain="[('priority','=','3')]"/>
+                <filter string="Résolus" name="done" domain="[('state','=','done')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter string="Client" name="by_partner" context="{'group_by':'partner_id'}"/>
+                    <filter string="Site" name="by_site" context="{'group_by':'site_id'}"/>
+                    <filter string="État" name="by_state" context="{'group_by':'state'}"/>
+                    <filter string="Priorité" name="by_priority" context="{'group_by':'priority'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_it_ticket" model="ir.actions.act_window">
+        <field name="name">Tickets client</field>
+        <field name="res_model">it.ticket</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_it_ticket_search"/>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+</odoo>
+

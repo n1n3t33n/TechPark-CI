@@ -54,6 +54,8 @@
                             <field name="marque"/>
                             <field name="modele"/>
                             <field name="numero_serie"/>
+                            <field name="partner_id"/>
+                            <field name="site_id"/>
                             <field name="site"/>
                             <field name="localisation"/>
                         </group>
@@ -68,6 +70,8 @@
                             <field name="fournisseur_id"/>
                             <field name="date_achat"/>
                             <field name="valeur_achat"/>
+                            <field name="sale_order_id"/>
+                            <field name="stock_picking_id"/>
                         </group>
                         <group string="Garantie">
                             <field name="date_fin_garantie"/>
@@ -129,6 +133,30 @@
                             </field>
                         </page>
 
+                        <page string="Tickets" name="tickets">
+                            <field name="ticket_ids">
+                                <list string="Tickets">
+                                    <field name="name"/>
+                                    <field name="subject"/>
+                                    <field name="priority"/>
+                                    <field name="technicien_id"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Licences" name="licenses">
+                            <field name="license_ids">
+                                <list string="Licences">
+                                    <field name="name"/>
+                                    <field name="license_type"/>
+                                    <field name="seat_count"/>
+                                    <field name="date_expiration"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+
                         <page string="Statistiques" name="stats">
                             <group>
                                 <field name="nb_interventions"/>
@@ -139,11 +167,7 @@
                     </notebook>
                 </sheet>
 
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -163,6 +187,8 @@
                 <field name="marque"/>
                 <field name="modele"/>
                 <field name="numero_serie"/>
+                <field name="partner_id" optional="show"/>
+                <field name="site_id" optional="show"/>
                 <field name="site"/>
                 <field name="employe_id"/>
                 <field name="departement_id"/>
@@ -193,16 +219,12 @@
                 <field name="state"/>
                 <field name="garantie_expiree"/>
                 <templates>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_card oe_kanban_global_click">
-                            <div class="oe_kanban_content">
-                                <strong><field name="name"/></strong>
-                                <div><field name="categorie"/> — <field name="marque"/></div>
-                                <div>👤 <field name="employe_id"/></div>
-                                <div t-if="record.garantie_expiree.raw_value"
-                                     class="text-danger">⚠️ Garantie expirée</div>
-                            </div>
-                        </div>
+                    <t t-name="card">
+                        <strong><field name="name"/></strong>
+                        <div><field name="categorie"/> — <field name="marque"/></div>
+                        <div>👤 <field name="employe_id"/></div>
+                        <div t-if="record.garantie_expiree.raw_value"
+                             class="text-danger">⚠️ Garantie expirée</div>
                     </t>
                 </templates>
             </kanban>

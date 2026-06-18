@@ -23,6 +23,8 @@
                         <group string="Informations générales">
                             <field name="reference"/>
                             <field name="type_contrat"/>
+                            <field name="partner_id"/>
+                            <field name="site_id"/>
                             <field name="fournisseur_id"/>
                             <field name="equipement_id"/>
                         </group>
@@ -30,6 +32,7 @@
                             <field name="date_debut"/>
                             <field name="date_fin"/>
                             <field name="montant"/>
+                            <field name="invoice_id"/>
                             <field name="jours_restants"/>
                             <field name="expire"/>
                         </group>
@@ -38,11 +41,7 @@
                         <field name="description" nolabel="1"/>
                     </group>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>

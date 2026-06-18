@@ -18,6 +18,21 @@ class ItIntervention(models.Model):
         ondelete='cascade',
         tracking=True
     )
+    partner_id = fields.Many2one(
+        'res.partner',
+        string='Client',
+        related='equipement_id.partner_id',
+        store=True,
+        readonly=True
+    )
+    site_id = fields.Many2one(
+        'it.site',
+        string='Site',
+        related='equipement_id.site_id',
+        store=True,
+        readonly=True
+    )
+    ticket_id = fields.Many2one('it.ticket', string='Ticket lié')
     type_intervention = fields.Selection([
         ('corrective',  'Corrective'),
         ('preventive',  'Préventive'),
@@ -41,6 +56,7 @@ class ItIntervention(models.Model):
     )
     cout        = fields.Float(string='Coût (FCFA)')
     rapport     = fields.Text(string='Rapport d\'intervention')
+    invoice_id  = fields.Many2one('account.move', string='Facture liée')
 
     state = fields.Selection([
         ('planifie',  'Planifiée'),

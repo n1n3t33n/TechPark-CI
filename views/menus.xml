@@ -20,6 +20,12 @@
               action="action_it_equipement"
               sequence="10"/>
 
+    <menuitem id="menu_it_site"
+              name="Sites client"
+              parent="menu_it_parc_equipements"
+              action="action_it_site"
+              sequence="15"/>
+
     <menuitem id="menu_it_affectation"
               name="Historique des affectations"
               parent="menu_it_parc_equipements"
@@ -38,6 +44,12 @@
               action="action_it_intervention"
               sequence="10"/>
 
+    <menuitem id="menu_it_ticket"
+              name="Tickets client"
+              parent="menu_it_parc_maintenance"
+              action="action_it_ticket"
+              sequence="20"/>
+
     <!-- ─── NIVEAU 2 : Contrats ──────────────────────────────────────────── -->
     <menuitem id="menu_it_parc_contrats"
               name="Contrats"
@@ -49,6 +61,12 @@
               parent="menu_it_parc_contrats"
               action="action_it_contrat"
               sequence="10"/>
+
+    <menuitem id="menu_it_license"
+              name="Licences"
+              parent="menu_it_parc_contrats"
+              action="action_it_license"
+              sequence="20"/>
 
     <!-- ─── NIVEAU 2 : Alertes ───────────────────────────────────────────── -->
     <menuitem id="menu_it_parc_alertes"

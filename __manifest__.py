@@ -22,6 +22,10 @@
         'hr',
         'mail',
         'web',
+        'portal',
+        'sale',
+        'stock',
+        'account',
     ],
     'data': [
         # Sécurité - toujours en premier
@@ -33,11 +37,15 @@
         'data/ir_cron.xml',
 
         # Vues
+        'views/site_views.xml',
         'views/equipement_views.xml',
         'views/affectation_views.xml',
         'views/intervention_views.xml',
         'views/contrat_views.xml',
+        'views/ticket_views.xml',
+        'views/license_views.xml',
         'views/alerte_views.xml',
+        'views/portal_templates.xml',
 
         # Wizards
         'views/wizard_reaffectation_views.xml',

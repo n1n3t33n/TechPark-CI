@@ -39,6 +39,18 @@ class ItEquipement(models.Model):
     description = fields.Text(string='Description / Caractéristiques techniques')
 
     # ─── Localisation ─────────────────────────────────────────────────────────
+    partner_id = fields.Many2one(
+        'res.partner',
+        string='Client',
+        tracking=True,
+        help='Client propriétaire ou bénéficiaire de cet équipement.'
+    )
+    site_id = fields.Many2one(
+        'it.site',
+        string='Site client',
+        domain="[('partner_id', 'child_of', partner_id)]",
+        tracking=True
+    )
     site = fields.Selection([
         ('abidjan_cocody', 'Abidjan - Cocody'),
         ('abidjan_plateau','Abidjan - Plateau'),
@@ -63,6 +75,8 @@ class ItEquipement(models.Model):
     date_achat       = fields.Date(string='Date d\'achat')
     valeur_achat     = fields.Float(string='Valeur d\'achat (FCFA)')
     fournisseur_id   = fields.Many2one('res.partner', string='Fournisseur')
+    sale_order_id    = fields.Many2one('sale.order', string='Commande de vente')
+    stock_picking_id = fields.Many2one('stock.picking', string='Bon de livraison')
 
     # ─── Garantie ─────────────────────────────────────────────────────────────
     date_fin_garantie   = fields.Date(string='Date de fin de garantie', tracking=True)
@@ -89,6 +103,8 @@ class ItEquipement(models.Model):
     affectation_ids  = fields.One2many('it.affectation',  'equipement_id', string='Historique des affectations')
     intervention_ids = fields.One2many('it.intervention', 'equipement_id', string='Interventions')
     contrat_ids      = fields.One2many('it.contrat',      'equipement_id', string='Contrats')
+    ticket_ids       = fields.One2many('it.ticket',       'equipement_id', string='Tickets')
+    license_ids      = fields.One2many('it.license',      'equipement_id', string='Licences')
 
     nb_interventions = fields.Integer(
         string='Nombre d\'interventions',

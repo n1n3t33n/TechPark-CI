@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_it_site_list" model="ir.ui.view">
+        <field name="name">it.site.list</field>
+        <field name="model">it.site</field>
+        <field name="arch" type="xml">
+            <list string="Sites client">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="city"/>
+                <field name="contact_id"/>
+                <field name="phone"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_it_site_form" model="ir.ui.view">
+        <field name="name">it.site.form</field>
+        <field name="model">it.site</field>
+        <field name="arch" type="xml">
+            <form string="Site client">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="contact_id"/>
+                            <field name="phone"/>
+                        </group>
+                        <group>
+                            <field name="street"/>
+                            <field name="city"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Équipements">
+                            <field name="equipement_ids" readonly="1"/>
+                        </page>
+                        <page string="Tickets">
+                            <field name="ticket_ids" readonly="1"/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_it_site_search" model="ir.ui.view">
+        <field name="name">it.site.search</field>
+        <field name="model">it.site</field>
+        <field name="arch" type="xml">
+            <search string="Rechercher un site">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="city"/>
+                <group expand="0" string="Regrouper par">
+                    <filter string="Client" name="by_partner" context="{'group_by':'partner_id'}"/>
+                    <filter string="Ville" name="by_city" context="{'group_by':'city'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_it_site" model="ir.actions.act_window">
+        <field name="name">Sites client</field>
+        <field name="res_model">it.site</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_it_site_search"/>
+    </record>
+</odoo>
+

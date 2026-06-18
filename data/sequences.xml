@@ -11,5 +11,14 @@
             <field name="number_next">1</field>
         </record>
 
+        <record id="seq_it_ticket" model="ir.sequence">
+            <field name="name">Séquence Ticket IT</field>
+            <field name="code">it.ticket</field>
+            <field name="prefix">TCK/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+        </record>
+
     </data>
 </odoo>

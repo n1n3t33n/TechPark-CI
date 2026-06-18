@@ -16,6 +16,7 @@ class ItContrat(models.Model):
         string='Fournisseur',
         required=True
     )
+    partner_id = fields.Many2one('res.partner', string='Client', tracking=True)
     type_contrat = fields.Selection([
         ('maintenance', 'Maintenance'),
         ('licence',     'Licence logicielle'),
@@ -32,6 +33,8 @@ class ItContrat(models.Model):
         string='Équipement concerné',
         ondelete='set null'
     )
+    site_id = fields.Many2one('it.site', string='Site client', domain="[('partner_id', 'child_of', partner_id)]")
+    invoice_id = fields.Many2one('account.move', string='Facture liée')
     description = fields.Text(string='Description / Conditions')
 
     jours_restants = fields.Integer(

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_it_parc" name="IT Parc Portal Entry" inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_client_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_client_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Mon parc informatique</t>
+                <t t-set="url" t-value="'/my/it-parc'"/>
+                <t t-set="text">Machines, tickets, contrats, interventions et licences</t>
+                <t t-set="placeholder_count" t-value="'it_equipment_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_it_parc_nav" name="IT Parc Portal Navigation">
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="/my/it-parc" class="btn btn-outline-primary btn-sm">Résumé</a>
+            <a href="/my/it-parc/equipements" class="btn btn-outline-primary btn-sm">Machines</a>
+            <a href="/my/it-parc/tickets" class="btn btn-outline-primary btn-sm">Tickets</a>
+            <a href="/my/it-parc/contrats" class="btn btn-outline-primary btn-sm">Contrats</a>
+            <a href="/my/it-parc/interventions" class="btn btn-outline-primary btn-sm">Interventions</a>
+            <a href="/my/it-parc/licenses" class="btn btn-outline-primary btn-sm">Licences</a>
+        </div>
+    </template>
+
+    <template id="portal_it_parc_home" name="Mon parc informatique">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar"><t t-set="title">Mon parc informatique</t></t>
+            <t t-call="it_parc.portal_it_parc_nav"/>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Sites</div><h3 t-out="len(sites)"/></div></div></div>
+                <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Machines</div><h3 t-out="len(equipements)"/></div></div></div>
+                <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Tickets ouverts</div><h3 t-out="len(tickets.filtered(lambda t: t.state in ['new','assigned','in_progress']))"/></div></div></div>
+                <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Licences</div><h3 t-out="len(licenses)"/></div></div></div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h4>Derniers tickets</h4>
+                <a href="/my/it-parc/tickets/new" class="btn btn-primary btn-sm">Créer un ticket</a>
+            </div>
+            <t t-call="it_parc.portal_it_parc_ticket_table"/>
+        </t>
+    </template>
+
+    <template id="portal_it_parc_ticket_table" name="IT Parc Ticket Table">
+        <div t-if="not tickets" class="alert alert-info" role="status">Aucun ticket pour le moment.</div>
+        <t t-if="tickets" t-call="portal.portal_table">
+            <thead><tr><th>Référence</th><th>Sujet</th><th>Site</th><th>Machine</th><th>Priorité</th><th>État</th></tr></thead>
+            <t t-foreach="tickets" t-as="ticket">
+                <tr>
+                    <td><t t-out="ticket.name"/></td>
+                    <td><t t-out="ticket.subject"/></td>
+                    <td><t t-out="ticket.site_id.name or ''"/></td>
+                    <td><t t-out="ticket.equipement_id.name or ''"/></td>
+                    <td><t t-out="dict(ticket._fields['priority'].selection).get(ticket.priority)"/></td>
+                    <td><span class="badge text-bg-secondary" t-out="dict(ticket._fields['state'].selection).get(ticket.state)"/></td>
+                </tr>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_it_parc_tickets" name="Mes tickets">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar"><t t-set="title">Mes tickets</t></t>
+            <t t-call="it_parc.portal_it_parc_nav"/>
+            <div class="mb-3"><a href="/my/it-parc/tickets/new" class="btn btn-primary">Créer un ticket</a></div>
+            <t t-call="it_parc.portal_it_parc_ticket_table"/>
+        </t>
+    </template>
+
+    <template id="portal_it_parc_ticket_new" name="Nouveau ticket">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar"><t t-set="title">Créer un ticket</t></t>
+            <t t-call="it_parc.portal_it_parc_nav"/>
+            <div t-if="error" class="alert alert-danger" role="alert" t-out="error"/>
+            <form method="post" action="/my/it-parc/tickets/new" class="o_portal_details">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label" for="subject">Sujet</label>
+                        <input id="subject" name="subject" class="form-control" required="required"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="priority">Priorité</label>
+                        <select id="priority" name="priority" class="form-select">
+                            <option value="1">Normale</option>
+                            <option value="2">Haute</option>
+                            <option value="3">Critique</option>
+                            <option value="0">Basse</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="site_id">Site</label>
+                        <select id="site_id" name="site_id" class="form-select">
+                            <option value="">Non précisé</option>
+                            <option t-foreach="sites" t-as="site" t-att-value="site.id" t-out="site.name"/>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="equipement_id">Machine</label>
+                        <select id="equipement_id" name="equipement_id" class="form-select">
+                            <option value="">Non précisée</option>
+                            <option t-foreach="equipements" t-as="equipement" t-att-value="equipement.id" t-out="equipement.display_name"/>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="description">Description</label>
+                        <textarea id="description" name="description" class="form-control" rows="6" required="required"/>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Envoyer</button>
+                        <a href="/my/it-parc/tickets" class="btn btn-light">Annuler</a>
+                    </div>
+                </div>
+            </form>
+        </t>
+    </template>
+
+    <template id="portal_it_parc_equipements" name="Mes machines">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar"><t t-set="title">Mes machines</t></t>
+            <t t-call="it_parc.portal_it_parc_nav"/>
+            <div t-if="not equipements" class="alert alert-info" role="status">Aucune machine publiée sur votre compte.</div>
+            <t t-if="equipements" t-call="portal.portal_table">
+                <thead><tr><th>Référence</th><th>Nom</th><th>Catégorie</th><th>Site</th><th>État</th></tr></thead>
+                <t t-foreach="equipements" t-as="equipement">
+                    <tr><td t-out="equipement.reference"/><td t-out="equipement.name"/><td t-out="equipement.categorie"/><td t-out="equipement.site_id.name or equipement.site"/><td t-out="equipement.state"/></tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_it_parc_contrats" name="Mes contrats">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar"><t t-set="title">Mes contrats</t></t>
+            <t t-call="it_parc.portal_it_parc_nav"/>
+            <div t-if="not contrats" class="alert alert-info" role="status">Aucun contrat pour le moment.</div>
+            <t t-if="contrats" t-call="portal.portal_table">
+                <thead><tr><th>Contrat</th><th>Machine</th><th>Début</th><th>Fin</th><th>État</th></tr></thead>
+                <t t-foreach="contrats" t-as="contrat">
+                    <tr><td t-out="contrat.name"/><td t-out="contrat.equipement_id.name or ''"/><td><span t-field="contrat.date_debut"/></td><td><span t-field="contrat.date_fin"/></td><td t-out="contrat.state"/></tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_it_parc_interventions" name="Mes interventions">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar"><t t-set="title">Mes interventions</t></t>
+            <t t-call="it_parc.portal_it_parc_nav"/>
+            <div t-if="not interventions" class="alert alert-info" role="status">Aucune intervention pour le moment.</div>
+            <t t-if="interventions" t-call="portal.portal_table">
+                <thead><tr><th>Objet</th><th>Machine</th><th>Technicien</th><th>Date</th><th>État</th></tr></thead>
+                <t t-foreach="interventions" t-as="intervention">
+                    <tr><td t-out="intervention.name"/><td t-out="intervention.equipement_id.name"/><td t-out="intervention.technicien_id.name or ''"/><td><span t-field="intervention.date_debut"/></td><td t-out="intervention.state"/></tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_it_parc_licenses" name="Mes licences">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_searchbar"><t t-set="title">Mes licences</t></t>
+            <t t-call="it_parc.portal_it_parc_nav"/>
+            <div t-if="not licenses" class="alert alert-info" role="status">Aucune licence pour le moment.</div>
+            <t t-if="licenses" t-call="portal.portal_table">
+                <thead><tr><th>Logiciel</th><th>Machine</th><th>Postes</th><th>Expiration</th><th>État</th></tr></thead>
+                <t t-foreach="licenses" t-as="license">
+                    <tr><td t-out="license.name"/><td t-out="license.equipement_id.name or ''"/><td t-out="license.seat_count"/><td><span t-field="license.date_expiration"/></td><td t-out="license.state"/></tr>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
+

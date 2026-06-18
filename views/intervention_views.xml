@@ -22,7 +22,10 @@
                     </div>
                     <group>
                         <group string="Équipement concerné">
+                            <field name="partner_id"/>
+                            <field name="site_id"/>
                             <field name="equipement_id"/>
+                            <field name="ticket_id"/>
                             <field name="type_intervention"/>
                             <field name="technicien_id"/>
                         </group>
@@ -31,17 +34,14 @@
                             <field name="date_fin"/>
                             <field name="duree_heures"/>
                             <field name="cout"/>
+                            <field name="invoice_id"/>
                         </group>
                     </group>
                     <group string="Rapport d'intervention">
                         <field name="rapport" nolabel="1"/>
                     </group>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>

@@ -7,7 +7,7 @@
             <form string="Import CSV d'équipements">
                 <sheet>
                     <group string="Format attendu du CSV">
-                        <div colspan="2" class="alert alert-info">
+                        <div colspan="2" class="alert alert-info" role="status">
                             <p>Colonnes <b>obligatoires</b> : <code>name</code>, <code>categorie</code>, <code>site</code></p>
                             <p>Colonnes <b>optionnelles</b> : <code>marque</code>, <code>modele</code>, <code>numero_serie</code>, <code>valeur_achat</code>, <code>date_fin_garantie</code></p>
                             <p>Valeurs <code>categorie</code> : poste_travail, serveur, imprimante, reseau, telephone, autre</p>
