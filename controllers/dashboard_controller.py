@@ -19,7 +19,7 @@ class ItParcDashboardController(http.Controller):
 
         # ── KPI 2 : Répartition par état ─────────────────────────────────
         etats = {}
-        for etat in ['brouillon', 'affecte', 'maintenance', 'retire']:
+        for etat in ['brouillon', 'affecte', 'location', 'maintenance', 'retire']:
             etats[etat] = env['it.equipement'].search_count([('state', '=', etat)])
 
         # ── KPI 3 : Garanties expirées ────────────────────────────────────
@@ -52,22 +52,14 @@ class ItParcDashboardController(http.Controller):
         ])
 
         # ── Graphique 1 : Équipements par catégorie ───────────────────────
-        categories = ['poste_travail', 'serveur', 'imprimante',
-                      'reseau', 'telephone', 'autre']
-        labels_cat = {
-            'poste_travail': 'Postes de travail',
-            'serveur':       'Serveurs',
-            'imprimante':    'Imprimantes',
-            'reseau':        'Réseau',
-            'telephone':     'Téléphones IP',
-            'autre':         'Autres',
-        }
+        # Libellés dérivés directement de la définition du champ Selection
+        labels_cat = dict(env['it.equipement']._fields['categorie'].selection)
         data_categories = []
-        for cat in categories:
+        for cat, label in labels_cat.items():
             nb = env['it.equipement'].search_count([('categorie', '=', cat)])
             if nb > 0:
                 data_categories.append({
-                    'label': labels_cat[cat],
+                    'label': label,
                     'value': nb,
                 })
 
@@ -93,6 +85,7 @@ class ItParcDashboardController(http.Controller):
         for eq in equipements:
             if eq.nb_interventions > 0:
                 top_equipements.append({
+                    'id':               eq.id,
                     'name':             eq.name,
                     'reference':        eq.reference,
                     'nb_interventions': eq.nb_interventions,
@@ -118,6 +111,7 @@ class ItParcDashboardController(http.Controller):
             'kpis': {
                 'total_equipements':   total_equipements,
                 'affectes':            etats.get('affecte', 0),
+                'en_location':         etats.get('location', 0),
                 'en_maintenance':      etats.get('maintenance', 0),
                 'retires':             etats.get('retire', 0),
                 'garanties_expirees':  garanties_expirees,

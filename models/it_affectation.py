@@ -27,5 +27,6 @@ class ItAffectation(models.Model):
         default=fields.Date.today
     )
     date_retour    = fields.Date(string='Date de retour')
+    localisation   = fields.Char(string='Localisation précise (bureau, salle...)')
     motif          = fields.Text(string='Motif de l\'affectation / réaffectation')
     active_line    = fields.Boolean(string='Affectation active', default=True)

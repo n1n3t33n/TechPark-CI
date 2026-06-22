@@ -1,0 +1,161 @@
+/* ─── Portail client IT Parc ─────────────────────────────────────────────── */
+
+.o_itp_portal {
+    --itp-primary: #1F4E79;
+    --itp-primary-light: #2E75B6;
+}
+
+/* Hero */
+.o_itp_hero {
+    background: linear-gradient(120deg, #1F4E79 0%, #2E75B6 100%);
+    color: #fff;
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 6px 18px rgba(31, 78, 121, 0.25);
+}
+.o_itp_hero h1 {
+    font-weight: 700;
+    margin: 0;
+    font-size: 26px;
+}
+.o_itp_hero p { margin: 6px 0 0; opacity: 0.9; }
+
+/* Navigation par onglets */
+.o_itp_nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.o_itp_nav a {
+    text-decoration: none;
+    border: 1px solid #d7e1ec;
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--itp-primary);
+    background: #fff;
+    transition: all 0.15s ease;
+}
+.o_itp_nav a:hover { background: #eef4fb; }
+.o_itp_nav a.active {
+    background: var(--itp-primary);
+    color: #fff;
+    border-color: var(--itp-primary);
+}
+
+/* Cartes KPI */
+.o_itp_kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+@media (max-width: 768px) {
+    .o_itp_kpis { grid-template-columns: repeat(2, 1fr); }
+}
+.o_itp_kpi {
+    display: block;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 5px solid var(--itp-primary);
+    transition: transform 0.15s, box-shadow 0.15s;
+    color: inherit;
+}
+.o_itp_kpi:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    text-decoration: none;
+    color: inherit;
+}
+.o_itp_kpi .o_itp_kpi_value {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+}
+.o_itp_kpi .o_itp_kpi_label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    margin-top: 6px;
+}
+.o_itp_kpi .o_itp_kpi_icon { font-size: 20px; opacity: 0.5; float: right; }
+.o_itp_kpi.itp-blue   { border-left-color: #1F4E79; }
+.o_itp_kpi.itp-green  { border-left-color: #28a745; }
+.o_itp_kpi.itp-orange { border-left-color: #fd7e14; }
+.o_itp_kpi.itp-purple { border-left-color: #6f42c1; }
+.o_itp_kpi.itp-teal   { border-left-color: #20c997; }
+.o_itp_kpi.itp-cyan   { border-left-color: #0dcaf0; }
+
+/* Section */
+.o_itp_section_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 8px 0 14px;
+}
+.o_itp_section_head h4 { margin: 0; font-weight: 600; color: #343a40; }
+
+/* Tableaux */
+.o_itp_table {
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-collapse: collapse;
+    margin-bottom: 24px;
+}
+.o_itp_table thead tr { background: #f4f7fb; }
+.o_itp_table th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #51607a;
+    font-weight: 600;
+}
+.o_itp_table td {
+    padding: 12px 14px;
+    border-top: 1px solid #eef2f6;
+    font-size: 14px;
+    color: #343a40;
+}
+.o_itp_table tbody tr { transition: background 0.12s; }
+.o_itp_table tbody tr.o_itp_clickable { cursor: pointer; }
+.o_itp_table tbody tr:hover { background: #f7faff; }
+
+/* Badges d'état */
+.o_itp_badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.itp-st-new, .itp-st-assigned, .itp-st-in_progress { background: #fff3cd; color: #856404; }
+.itp-st-done, .itp-st-active, .itp-st-affecte      { background: #d4edda; color: #155724; }
+.itp-st-cancelled, .itp-st-expired, .itp-st-retire { background: #f8d7da; color: #721c24; }
+.itp-st-expiring, .itp-st-location                 { background: #d1ecf1; color: #0c5460; }
+.itp-pri-3 { background: #f8d7da; color: #721c24; }
+.itp-pri-2 { background: #ffe5d0; color: #97431a; }
+.itp-pri-1 { background: #e2e3e5; color: #383d41; }
+.itp-pri-0 { background: #e9ecef; color: #6c757d; }
+
+/* Empty state */
+.o_itp_empty {
+    background: #fff;
+    border: 1px dashed #cfd8e3;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 24px;
+}

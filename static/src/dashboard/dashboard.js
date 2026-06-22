@@ -9,6 +9,7 @@ class ItParcDashboard extends Component {
     static template = "it_parc.Dashboard";
 
     setup() {
+        this.action = useService("action");
         this.state = useState({
             loading: true,
             kpis: {},
@@ -20,6 +21,27 @@ class ItParcDashboard extends Component {
         onWillStart(async () => {
             await this._chargerDonnees();
         });
+    }
+
+    /**
+     * Ouvre une vue liste filtrée. Utilisé pour rendre les KPIs cliquables.
+     * @param {string} model  modèle Odoo (ex: 'it.equipement')
+     * @param {Array}  domain domaine de recherche Odoo
+     * @param {string} name   titre de la fenêtre
+     */
+    ouvrirListe(model, domain, name) {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: name,
+            res_model: model,
+            domain: domain || [],
+            views: [[false, "list"], [false, "form"]],
+            target: "current",
+        });
+    }
+
+    ouvrirEquipements(domain, name) {
+        this.ouvrirListe("it.equipement", domain, name || "Équipements");
     }
 
     async _chargerDonnees() {

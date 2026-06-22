@@ -13,10 +13,19 @@
                             type="object"
                             class="btn-primary"
                             invisible="state != 'brouillon'"/>
+                    <button name="action_mettre_en_location"
+                            string="Mettre en location"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('brouillon','affecte')"/>
+                    <button name="action_terminer_location"
+                            string="Fin de location"
+                            type="object"
+                            invisible="state != 'location'"/>
                     <button name="action_mettre_en_maintenance"
                             string="Mettre en maintenance"
                             type="object"
-                            invisible="state not in ('brouillon','affecte')"/>
+                            invisible="state not in ('brouillon','affecte','location')"/>
                     <button name="action_retirer"
                             string="Retirer du parc"
                             type="object"
@@ -34,7 +43,7 @@
                             type="object"
                             class="btn-secondary"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="brouillon,affecte,maintenance,retire"/>
+                           statusbar_visible="brouillon,affecte,location,maintenance,retire"/>
                 </header>
 
                 <sheet>
@@ -48,21 +57,40 @@
                         </h3>
                     </div>
 
+                    <field name="famille" invisible="1"/>
                     <group>
                         <group string="Identification">
                             <field name="categorie"/>
                             <field name="marque"/>
                             <field name="modele"/>
                             <field name="numero_serie"/>
+                        </group>
+                        <group string="Client / Site">
                             <field name="partner_id"/>
                             <field name="site_id"/>
-                            <field name="site"/>
-                            <field name="localisation"/>
-                        </group>
-                        <group string="Affectation">
                             <field name="employe_id"/>
                             <field name="departement_id"/>
                         </group>
+                    </group>
+
+                    <group string="Caractéristiques techniques">
+                        <group invisible="famille != 'informatique'">
+                            <field name="cpu"/>
+                            <field name="ram_go"/>
+                            <field name="stockage_go"/>
+                            <field name="type_stockage"/>
+                            <field name="systeme_exploitation"/>
+                        </group>
+                        <group invisible="famille != 'reseau'">
+                            <field name="adresse_ip"/>
+                            <field name="adresse_mac"/>
+                            <field name="nb_ports"/>
+                        </group>
+                        <group invisible="categorie != 'ecran'">
+                            <field name="taille_ecran"/>
+                        </group>
+                        <field name="specifications" colspan="2"
+                               placeholder="Autres caractéristiques (carte graphique, batterie, ports...)"/>
                     </group>
 
                     <group>
@@ -80,7 +108,21 @@
                         </group>
                     </group>
 
-                    <group string="Description technique">
+                    <group string="Location"
+                           invisible="state != 'location' and not locataire_id">
+                        <group>
+                            <field name="locataire_id"/>
+                            <field name="loyer_mensuel"/>
+                        </group>
+                        <group>
+                            <field name="date_debut_location"/>
+                            <field name="date_fin_location"/>
+                            <field name="jours_avant_fin_location"/>
+                            <field name="location_bientot_finie"/>
+                        </group>
+                    </group>
+
+                    <group string="Notes / Description">
                         <field name="description" nolabel="1"/>
                     </group>
 
@@ -106,9 +148,10 @@
 
                         <page string="Historique des affectations" name="affectations">
                             <field name="affectation_ids">
-                                <list string="Affectations">
+                                <list string="Affectations" editable="bottom">
                                     <field name="employe_id"/>
                                     <field name="departement_id"/>
+                                    <field name="localisation"/>
                                     <field name="date_affectation"/>
                                     <field name="date_retour"/>
                                     <field name="motif"/>
@@ -186,20 +229,24 @@
                 <field name="categorie"/>
                 <field name="marque"/>
                 <field name="modele"/>
-                <field name="numero_serie"/>
+                <field name="numero_serie" optional="show"/>
+                <field name="cpu" optional="hide"/>
+                <field name="ram_go" optional="hide"/>
+                <field name="stockage_go" optional="hide"/>
                 <field name="partner_id" optional="show"/>
                 <field name="site_id" optional="show"/>
-                <field name="site"/>
-                <field name="employe_id"/>
-                <field name="departement_id"/>
-                <field name="date_fin_garantie"/>
-                <field name="jours_garantie_restants" optional="show"/>
+                <field name="employe_id" optional="show"/>
+                <field name="departement_id" optional="hide"/>
+                <field name="locataire_id" optional="hide"/>
+                <field name="date_fin_garantie" optional="show"/>
+                <field name="jours_garantie_restants" optional="hide"/>
                 <field name="garantie_expiree" optional="hide"/>
-                <field name="nb_interventions" optional="show"/>
-                <field name="cout_total_maintenance" optional="show"/>
+                <field name="nb_interventions" optional="hide"/>
+                <field name="cout_total_maintenance" optional="hide"/>
                 <field name="state" widget="badge"
                        decoration-info="state=='brouillon'"
                        decoration-success="state=='affecte'"
+                       decoration-primary="state=='location'"
                        decoration-warning="state=='maintenance'"
                        decoration-danger="state=='retire'"/>
             </list>
@@ -216,13 +263,15 @@
                 <field name="categorie"/>
                 <field name="marque"/>
                 <field name="employe_id"/>
+                <field name="partner_id"/>
                 <field name="state"/>
                 <field name="garantie_expiree"/>
                 <templates>
                     <t t-name="card">
                         <strong><field name="name"/></strong>
                         <div><field name="categorie"/> — <field name="marque"/></div>
-                        <div>👤 <field name="employe_id"/></div>
+                        <div t-if="record.partner_id.raw_value">🏢 <field name="partner_id"/></div>
+                        <div t-if="record.employe_id.raw_value">👤 <field name="employe_id"/></div>
                         <div t-if="record.garantie_expiree.raw_value"
                              class="text-danger">⚠️ Garantie expirée</div>
                     </t>
@@ -240,20 +289,25 @@
                 <field name="name" string="Nom"/>
                 <field name="reference"/>
                 <field name="numero_serie"/>
+                <field name="partner_id"/>
+                <field name="site_id"/>
                 <field name="employe_id"/>
                 <field name="departement_id"/>
                 <separator/>
                 <filter string="Brouillon"     name="brouillon"   domain="[('state','=','brouillon')]"/>
                 <filter string="Affectés"       name="affectes"    domain="[('state','=','affecte')]"/>
+                <filter string="En location"    name="location"    domain="[('state','=','location')]"/>
                 <filter string="En maintenance" name="maintenance" domain="[('state','=','maintenance')]"/>
                 <filter string="Retirés"        name="retires"     domain="[('state','=','retire')]"/>
                 <separator/>
                 <filter string="Garantie expirée"  name="garantie_expiree"  domain="[('garantie_expiree','=',True)]"/>
                 <filter string="Garantie &lt; 30j" name="garantie_critique" domain="[('jours_garantie_restants','&lt;',30),('garantie_expiree','=',False)]"/>
+                <filter string="Fin de location proche" name="location_fin" domain="[('location_bientot_finie','=',True)]"/>
                 <separator/>
                 <group expand="0" string="Regrouper par">
                     <filter string="Catégorie"   name="by_categorie"   context="{'group_by':'categorie'}"/>
-                    <filter string="Site"         name="by_site"        context="{'group_by':'site'}"/>
+                    <filter string="Client"       name="by_partner"     context="{'group_by':'partner_id'}"/>
+                    <filter string="Site client"  name="by_site"        context="{'group_by':'site_id'}"/>
                     <filter string="Département" name="by_departement" context="{'group_by':'departement_id'}"/>
                     <filter string="État"         name="by_state"       context="{'group_by':'state'}"/>
                 </group>

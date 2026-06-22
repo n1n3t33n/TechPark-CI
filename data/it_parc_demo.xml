@@ -1,56 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data>
+<data noupdate="0">
 
     <!-- ═══════════════════════════════════════════════════════════════════
-         EMPLOYÉS DE DÉMO (utilise les employés existants si disponibles)
+         DÉPARTEMENTS & EMPLOYÉS INTERNES (techniciens)
          ═══════════════════════════════════════════════════════════════════ -->
-
-    <!-- Département DSI -->
     <record id="demo_dept_dsi" model="hr.department">
         <field name="name">DSI - Direction des Systèmes d'Information</field>
     </record>
-
     <record id="demo_dept_compta" model="hr.department">
         <field name="name">Comptabilité et Finance</field>
     </record>
-
     <record id="demo_dept_rh" model="hr.department">
         <field name="name">Ressources Humaines</field>
     </record>
 
-    <!-- Employés -->
     <record id="demo_employe_konan" model="hr.employee">
         <field name="name">Konan Adjoua Marie</field>
         <field name="department_id" ref="demo_dept_dsi"/>
         <field name="job_title">Administrateur Systèmes</field>
     </record>
-
     <record id="demo_employe_kouame" model="hr.employee">
         <field name="name">Kouamé Koffi Jean</field>
         <field name="department_id" ref="demo_dept_compta"/>
         <field name="job_title">Comptable Senior</field>
     </record>
-
     <record id="demo_employe_traore" model="hr.employee">
         <field name="name">Traoré Aminata</field>
         <field name="department_id" ref="demo_dept_rh"/>
         <field name="job_title">Responsable RH</field>
     </record>
-
     <record id="demo_employe_bamba" model="hr.employee">
         <field name="name">Bamba Seydou</field>
         <field name="department_id" ref="demo_dept_dsi"/>
         <field name="job_title">Technicien Réseau</field>
     </record>
-
     <record id="demo_employe_yao" model="hr.employee">
         <field name="name">Yao Kouassi Eric</field>
         <field name="department_id" ref="demo_dept_dsi"/>
         <field name="job_title">Développeur ERP</field>
     </record>
 
-    <!-- Fournisseur -->
+    <!-- ═══════════════════════════════════════════════════════════════════
+         FOURNISSEURS
+         ═══════════════════════════════════════════════════════════════════ -->
     <record id="demo_fournisseur_techsupply" model="res.partner">
         <field name="name">TechSupply CI</field>
         <field name="is_company">True</field>
@@ -58,7 +51,6 @@
         <field name="city">Abidjan</field>
         <field name="phone">+225 27 22 00 11 22</field>
     </record>
-
     <record id="demo_fournisseur_dell" model="res.partner">
         <field name="name">Dell Technologies Côte d'Ivoire</field>
         <field name="is_company">True</field>
@@ -66,20 +58,78 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════════
-         10 ÉQUIPEMENTS
+         CLIENTS (sociétés) + CONTACTS
+         ═══════════════════════════════════════════════════════════════════ -->
+    <record id="demo_client_baobab" model="res.partner">
+        <field name="name">Baobab Industries SA</field>
+        <field name="is_company">True</field>
+        <field name="street">Boulevard VGE, Marcory</field>
+        <field name="city">Abidjan</field>
+        <field name="phone">+225 27 21 35 40 00</field>
+        <field name="email">contact@baobab-industries.ci</field>
+    </record>
+    <record id="demo_contact_baobab" model="res.partner">
+        <field name="name">Aya Koffi</field>
+        <field name="parent_id" ref="demo_client_baobab"/>
+        <field name="function">Responsable Informatique</field>
+        <field name="email">aya.koffi@baobab-industries.ci</field>
+    </record>
+
+    <record id="demo_client_lagune" model="res.partner">
+        <field name="name">Lagune Distribution</field>
+        <field name="is_company">True</field>
+        <field name="street">Zone Industrielle de Yopougon</field>
+        <field name="city">Abidjan</field>
+        <field name="phone">+225 27 23 45 12 00</field>
+        <field name="email">info@lagune-distri.ci</field>
+    </record>
+    <record id="demo_contact_lagune" model="res.partner">
+        <field name="name">Moussa Cissé</field>
+        <field name="parent_id" ref="demo_client_lagune"/>
+        <field name="function">Directeur Général</field>
+        <field name="email">m.cisse@lagune-distri.ci</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SITES CLIENT
+         ═══════════════════════════════════════════════════════════════════ -->
+    <record id="demo_site_baobab_siege" model="it.site">
+        <field name="name">Siège Marcory</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="contact_id" ref="demo_contact_baobab"/>
+        <field name="street">Boulevard VGE, Marcory</field>
+        <field name="city">Abidjan</field>
+        <field name="phone">+225 27 21 35 40 00</field>
+    </record>
+    <record id="demo_site_baobab_usine" model="it.site">
+        <field name="name">Usine Yopougon</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="city">Abidjan</field>
+    </record>
+    <record id="demo_site_lagune_entrepot" model="it.site">
+        <field name="name">Entrepôt Yopougon</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="city">Abidjan</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ÉQUIPEMENTS (avec caractéristiques, client/site, location)
          ═══════════════════════════════════════════════════════════════════ -->
 
-    <!-- Équipement 1 : Poste de travail affecté -->
+    <!-- 1 : Portable affecté à un client -->
     <record id="demo_eq_01" model="it.equipement">
-        <field name="name">Dell OptiPlex 7090 — DSI-001</field>
-        <field name="categorie">poste_travail</field>
+        <field name="name">Dell Latitude 5440 — BAOBAB-PC01</field>
+        <field name="categorie">pc_portable</field>
         <field name="marque">Dell</field>
-        <field name="modele">OptiPlex 7090</field>
-        <field name="numero_serie">DL7090-CI-2024-001</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Bureau 201 — DSI</field>
-        <field name="employe_id" ref="demo_employe_konan"/>
-        <field name="departement_id" ref="demo_dept_dsi"/>
+        <field name="modele">Latitude 5440</field>
+        <field name="numero_serie">DL5440-CI-2024-001</field>
+        <field name="cpu">Intel Core i7-1355U</field>
+        <field name="ram_go">16</field>
+        <field name="stockage_go">512</field>
+        <field name="type_stockage">nvme</field>
+        <field name="systeme_exploitation">Windows 11 Pro</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_siege"/>
         <field name="date_achat">2024-01-15</field>
         <field name="valeur_achat">850000</field>
         <field name="fournisseur_id" ref="demo_fournisseur_dell"/>
@@ -87,17 +137,20 @@
         <field name="state">affecte</field>
     </record>
 
-    <!-- Équipement 2 : Poste de travail en maintenance -->
+    <!-- 2 : Fixe en maintenance -->
     <record id="demo_eq_02" model="it.equipement">
-        <field name="name">HP EliteDesk 800 — COMPTA-001</field>
-        <field name="categorie">poste_travail</field>
+        <field name="name">HP EliteDesk 800 — BAOBAB-PC02</field>
+        <field name="categorie">pc_fixe</field>
         <field name="marque">HP</field>
         <field name="modele">EliteDesk 800 G8</field>
         <field name="numero_serie">HP800G8-2023-045</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Bureau 105 — Comptabilité</field>
-        <field name="employe_id" ref="demo_employe_kouame"/>
-        <field name="departement_id" ref="demo_dept_compta"/>
+        <field name="cpu">Intel Core i5-11500</field>
+        <field name="ram_go">8</field>
+        <field name="stockage_go">256</field>
+        <field name="type_stockage">ssd</field>
+        <field name="systeme_exploitation">Windows 11 Pro</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_siege"/>
         <field name="date_achat">2023-06-10</field>
         <field name="valeur_achat">720000</field>
         <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
@@ -105,16 +158,20 @@
         <field name="state">maintenance</field>
     </record>
 
-    <!-- Équipement 3 : Serveur -->
+    <!-- 3 : Serveur -->
     <record id="demo_eq_03" model="it.equipement">
-        <field name="name">Dell PowerEdge R740 — SRV-PRINCIPAL</field>
+        <field name="name">Dell PowerEdge R740 — BAOBAB-SRV01</field>
         <field name="categorie">serveur</field>
         <field name="marque">Dell</field>
         <field name="modele">PowerEdge R740</field>
         <field name="numero_serie">PE-R740-2022-001</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Salle serveur — RDC</field>
-        <field name="departement_id" ref="demo_dept_dsi"/>
+        <field name="cpu">2x Intel Xeon Silver 4210</field>
+        <field name="ram_go">64</field>
+        <field name="stockage_go">2048</field>
+        <field name="type_stockage">ssd</field>
+        <field name="systeme_exploitation">Windows Server 2022</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_siege"/>
         <field name="date_achat">2022-03-20</field>
         <field name="valeur_achat">4500000</field>
         <field name="fournisseur_id" ref="demo_fournisseur_dell"/>
@@ -122,17 +179,15 @@
         <field name="state">affecte</field>
     </record>
 
-    <!-- Équipement 4 : Imprimante -->
+    <!-- 4 : Imprimante -->
     <record id="demo_eq_04" model="it.equipement">
-        <field name="name">HP LaserJet Pro M404 — IMP-RH-001</field>
+        <field name="name">HP LaserJet Pro M404 — BAOBAB-IMP01</field>
         <field name="categorie">imprimante</field>
         <field name="marque">HP</field>
         <field name="modele">LaserJet Pro M404dn</field>
         <field name="numero_serie">HPLJ-M404-2023-012</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Salle RH — Bâtiment B</field>
-        <field name="departement_id" ref="demo_dept_rh"/>
-        <field name="employe_id" ref="demo_employe_traore"/>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_usine"/>
         <field name="date_achat">2023-09-05</field>
         <field name="valeur_achat">280000</field>
         <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
@@ -140,17 +195,18 @@
         <field name="state">affecte</field>
     </record>
 
-    <!-- Équipement 5 : Équipement réseau -->
+    <!-- 5 : Switch réseau -->
     <record id="demo_eq_05" model="it.equipement">
-        <field name="name">Cisco Catalyst 2960 — SW-CORE-01</field>
-        <field name="categorie">reseau</field>
+        <field name="name">Cisco Catalyst 2960 — BAOBAB-SW01</field>
+        <field name="categorie">switch</field>
         <field name="marque">Cisco</field>
         <field name="modele">Catalyst 2960-X</field>
         <field name="numero_serie">CSC-2960X-2021-003</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Baie réseau — Salle serveur</field>
-        <field name="departement_id" ref="demo_dept_dsi"/>
-        <field name="employe_id" ref="demo_employe_bamba"/>
+        <field name="adresse_ip">192.168.1.2</field>
+        <field name="adresse_mac">00:1A:2B:3C:4D:5E</field>
+        <field name="nb_ports">48</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_siege"/>
         <field name="date_achat">2021-11-12</field>
         <field name="valeur_achat">1200000</field>
         <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
@@ -158,66 +214,78 @@
         <field name="state">affecte</field>
     </record>
 
-    <!-- Équipement 6 : Téléphone IP -->
+    <!-- 6 : Portable EN LOCATION chez un client -->
     <record id="demo_eq_06" model="it.equipement">
-        <field name="name">Cisco IP Phone 7841 — TEL-DG-001</field>
-        <field name="categorie">telephone</field>
-        <field name="marque">Cisco</field>
-        <field name="modele">IP Phone 7841</field>
-        <field name="numero_serie">CIP7841-2023-011</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Bureau Direction Générale</field>
-        <field name="date_achat">2023-02-28</field>
-        <field name="valeur_achat">180000</field>
-        <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
-        <field name="date_fin_garantie">2026-02-28</field>
-        <field name="state">affecte</field>
-    </record>
-
-    <!-- Équipement 7 : Poste de travail RH -->
-    <record id="demo_eq_07" model="it.equipement">
-        <field name="name">Lenovo ThinkCentre M720 — RH-002</field>
-        <field name="categorie">poste_travail</field>
+        <field name="name">Lenovo ThinkPad T14 — LOC-001</field>
+        <field name="categorie">pc_portable</field>
         <field name="marque">Lenovo</field>
-        <field name="modele">ThinkCentre M720q</field>
-        <field name="numero_serie">LNV-M720-2023-007</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Bureau 112 — RH</field>
-        <field name="employe_id" ref="demo_employe_traore"/>
-        <field name="departement_id" ref="demo_dept_rh"/>
-        <field name="date_achat">2023-04-18</field>
-        <field name="valeur_achat">650000</field>
+        <field name="modele">ThinkPad T14 Gen 4</field>
+        <field name="numero_serie">LNV-T14-2024-101</field>
+        <field name="cpu">AMD Ryzen 7 PRO 7840U</field>
+        <field name="ram_go">32</field>
+        <field name="stockage_go">1024</field>
+        <field name="type_stockage">nvme</field>
+        <field name="systeme_exploitation">Windows 11 Pro</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="site_id" ref="demo_site_lagune_entrepot"/>
+        <field name="locataire_id" ref="demo_client_lagune"/>
+        <field name="date_debut_location" eval="(datetime.now() - timedelta(days=60)).strftime('%Y-%m-%d')"/>
+        <field name="date_fin_location" eval="(datetime.now() + timedelta(days=20)).strftime('%Y-%m-%d')"/>
+        <field name="loyer_mensuel">75000</field>
+        <field name="date_achat">2024-02-01</field>
+        <field name="valeur_achat">1300000</field>
         <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
-        <field name="date_fin_garantie">2026-04-18</field>
-        <field name="state">affecte</field>
+        <field name="date_fin_garantie">2027-02-01</field>
+        <field name="state">location</field>
     </record>
 
-    <!-- Équipement 8 : Serveur Bouaké -->
-    <record id="demo_eq_08" model="it.equipement">
-        <field name="name">HP ProLiant DL380 — SRV-BKE-01</field>
-        <field name="categorie">serveur</field>
-        <field name="marque">HP</field>
-        <field name="modele">ProLiant DL380 Gen10</field>
-        <field name="numero_serie">HP-DL380-2022-BKE-001</field>
-        <field name="site">bouake</field>
-        <field name="localisation">Antenne Bouaké — Salle serveur</field>
-        <field name="departement_id" ref="demo_dept_dsi"/>
-        <field name="date_achat">2022-07-15</field>
-        <field name="valeur_achat">3800000</field>
+    <!-- 7 : Écran -->
+    <record id="demo_eq_07" model="it.equipement">
+        <field name="name">Dell UltraSharp U2723 — LAGUNE-ECR01</field>
+        <field name="categorie">ecran</field>
+        <field name="marque">Dell</field>
+        <field name="modele">UltraSharp U2723QE</field>
+        <field name="numero_serie">DLU2723-2024-201</field>
+        <field name="taille_ecran">27</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="site_id" ref="demo_site_lagune_entrepot"/>
+        <field name="date_achat">2024-03-01</field>
+        <field name="valeur_achat">420000</field>
         <field name="fournisseur_id" ref="demo_fournisseur_dell"/>
-        <field name="date_fin_garantie">2025-07-15</field>
+        <field name="date_fin_garantie">2027-03-01</field>
         <field name="state">affecte</field>
     </record>
 
-    <!-- Équipement 9 : Poste de travail DSI développeur -->
+    <!-- 8 : Routeur/Firewall -->
+    <record id="demo_eq_08" model="it.equipement">
+        <field name="name">Fortinet FortiGate 60F — LAGUNE-FW01</field>
+        <field name="categorie">routeur</field>
+        <field name="marque">Fortinet</field>
+        <field name="modele">FortiGate 60F</field>
+        <field name="numero_serie">FG60F-2023-301</field>
+        <field name="adresse_ip">192.168.10.1</field>
+        <field name="nb_ports">10</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="site_id" ref="demo_site_lagune_entrepot"/>
+        <field name="date_achat">2023-07-15</field>
+        <field name="valeur_achat">980000</field>
+        <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
+        <field name="date_fin_garantie">2026-07-15</field>
+        <field name="state">affecte</field>
+    </record>
+
+    <!-- 9 : Poste interne (parc TECHPARK, affecté à un employé) -->
     <record id="demo_eq_09" model="it.equipement">
-        <field name="name">Dell Precision 3660 — DEV-001</field>
-        <field name="categorie">poste_travail</field>
+        <field name="name">Dell Precision 3660 — DSI-DEV01</field>
+        <field name="categorie">pc_fixe</field>
         <field name="marque">Dell</field>
         <field name="modele">Precision 3660</field>
         <field name="numero_serie">DLP3660-2024-009</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Open Space DSI</field>
+        <field name="cpu">Intel Core i9-13900</field>
+        <field name="ram_go">32</field>
+        <field name="stockage_go">1024</field>
+        <field name="type_stockage">nvme</field>
+        <field name="systeme_exploitation">Ubuntu 24.04 LTS</field>
         <field name="employe_id" ref="demo_employe_yao"/>
         <field name="departement_id" ref="demo_dept_dsi"/>
         <field name="date_achat">2024-03-10</field>
@@ -227,15 +295,13 @@
         <field name="state">affecte</field>
     </record>
 
-    <!-- Équipement 10 : Retiré du parc -->
+    <!-- 10 : Retiré du parc -->
     <record id="demo_eq_10" model="it.equipement">
         <field name="name">HP Compaq 6200 — OLD-001</field>
-        <field name="categorie">poste_travail</field>
+        <field name="categorie">pc_fixe</field>
         <field name="marque">HP</field>
         <field name="modele">Compaq 6200 Pro</field>
         <field name="numero_serie">HPC6200-2019-022</field>
-        <field name="site">abidjan_cocody</field>
-        <field name="localisation">Stockage — Cave technique</field>
         <field name="date_achat">2019-05-20</field>
         <field name="valeur_achat">320000</field>
         <field name="date_fin_garantie">2022-05-20</field>
@@ -243,121 +309,181 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════════
-         3 CONTRATS FOURNISSEURS
+         CONTRATS (liés aux clients)
          ═══════════════════════════════════════════════════════════════════ -->
-
     <record id="demo_contrat_01" model="it.contrat">
-        <field name="name">Contrat maintenance serveurs Dell 2024-2025</field>
+        <field name="name">Contrat maintenance serveur — Baobab</field>
         <field name="reference">CTR-DELL-2024-001</field>
         <field name="fournisseur_id" ref="demo_fournisseur_dell"/>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_siege"/>
         <field name="type_contrat">maintenance</field>
         <field name="date_debut">2024-01-01</field>
-        <field name="date_fin">2025-12-31</field>
+        <field name="date_fin" eval="(datetime.now() + timedelta(days=120)).strftime('%Y-%m-%d')"/>
         <field name="montant">2400000</field>
         <field name="equipement_id" ref="demo_eq_03"/>
-        <field name="description">Contrat de maintenance préventive et corrective pour les serveurs Dell PowerEdge. Inclut les pièces de rechange et le support 24/7.</field>
+        <field name="description">Maintenance préventive et corrective du serveur Dell PowerEdge. Pièces et support 24/7.</field>
         <field name="state">actif</field>
     </record>
 
     <record id="demo_contrat_02" model="it.contrat">
-        <field name="name">Licence Microsoft 365 Business — 2025</field>
-        <field name="reference">CTR-MS365-2025-001</field>
+        <field name="name">Support réseau Cisco — Baobab</field>
+        <field name="reference">CTR-CISCO-2024-001</field>
         <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
-        <field name="type_contrat">licence</field>
-        <field name="date_debut">2025-01-01</field>
-        <field name="date_fin">2025-08-31</field>
-        <field name="montant">3600000</field>
-        <field name="description">Licences Microsoft 365 Business Premium pour 85 utilisateurs. Inclut Exchange Online, Teams, SharePoint et Office 365.</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="type_contrat">support</field>
+        <field name="date_debut">2024-06-01</field>
+        <field name="date_fin" eval="(datetime.now() + timedelta(days=25)).strftime('%Y-%m-%d')"/>
+        <field name="montant">1800000</field>
+        <field name="equipement_id" ref="demo_eq_05"/>
+        <field name="description">Support technique réseau Cisco. Intervention sur site sous 4h en cas de panne critique.</field>
         <field name="state">actif</field>
     </record>
 
     <record id="demo_contrat_03" model="it.contrat">
-        <field name="name">Support technique réseau Cisco — 2024</field>
-        <field name="reference">CTR-CISCO-2024-001</field>
+        <field name="name">Contrat de location parc — Lagune</field>
+        <field name="reference">CTR-LOC-2024-001</field>
         <field name="fournisseur_id" ref="demo_fournisseur_techsupply"/>
-        <field name="type_contrat">support</field>
-        <field name="date_debut">2024-06-01</field>
-        <field name="date_fin">2025-06-30</field>
-        <field name="montant">1800000</field>
-        <field name="equipement_id" ref="demo_eq_05"/>
-        <field name="description">Contrat de support technique pour les équipements réseau Cisco. Intervention sur site sous 4h en cas de panne critique.</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="site_id" ref="demo_site_lagune_entrepot"/>
+        <field name="type_contrat">autre</field>
+        <field name="date_debut">2024-04-01</field>
+        <field name="date_fin" eval="(datetime.now() + timedelta(days=300)).strftime('%Y-%m-%d')"/>
+        <field name="montant">900000</field>
+        <field name="equipement_id" ref="demo_eq_06"/>
+        <field name="description">Location de matériel informatique avec maintenance incluse.</field>
         <field name="state">actif</field>
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════════
-         5 INTERVENTIONS
+         INTERVENTIONS
          ═══════════════════════════════════════════════════════════════════ -->
-
     <record id="demo_interv_01" model="it.intervention">
         <field name="name">Remplacement disque dur défaillant</field>
         <field name="equipement_id" ref="demo_eq_02"/>
         <field name="type_intervention">corrective</field>
         <field name="technicien_id" ref="demo_employe_bamba"/>
-        <field name="date_debut">2025-03-10 08:00:00</field>
-        <field name="date_fin">2025-03-10 12:30:00</field>
+        <field name="date_debut" eval="(datetime.now() - timedelta(days=20)).strftime('%Y-%m-%d 08:00:00')"/>
+        <field name="date_fin" eval="(datetime.now() - timedelta(days=20)).strftime('%Y-%m-%d 12:30:00')"/>
         <field name="cout">85000</field>
-        <field name="rapport">Disque dur SATA 500Go défaillant remplacé par un SSD 256Go. Réinstallation du système d'exploitation Windows 11 Pro et restauration des données depuis la sauvegarde du 09/03/2025. Poste fonctionnel après intervention.</field>
+        <field name="rapport">Disque SATA 500Go remplacé par un SSD 256Go. Réinstallation Windows 11 Pro et restauration des données. Poste fonctionnel.</field>
         <field name="state">termine</field>
     </record>
 
     <record id="demo_interv_02" model="it.intervention">
-        <field name="name">Maintenance préventive trimestrielle — Serveur principal</field>
+        <field name="name">Maintenance préventive — Serveur Baobab</field>
         <field name="equipement_id" ref="demo_eq_03"/>
         <field name="type_intervention">preventive</field>
         <field name="technicien_id" ref="demo_employe_bamba"/>
-        <field name="date_debut">2025-04-05 09:00:00</field>
-        <field name="date_fin">2025-04-05 13:00:00</field>
+        <field name="date_debut" eval="(datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d 09:00:00')"/>
+        <field name="date_fin" eval="(datetime.now() - timedelta(days=10)).strftime('%Y-%m-%d 13:00:00')"/>
         <field name="cout">120000</field>
-        <field name="rapport">Nettoyage physique des composants. Vérification des températures CPU et RAM. Mise à jour firmware iDRAC. Test des alimentations redondantes. Vérification RAID — aucune dégradation détectée. Tout est nominal.</field>
+        <field name="rapport">Nettoyage des composants. Vérification températures et RAID. Mise à jour firmware iDRAC. Tout est nominal.</field>
         <field name="state">termine</field>
     </record>
 
     <record id="demo_interv_03" model="it.intervention">
-        <field name="name">Mise à jour firmware switch Cisco</field>
-        <field name="equipement_id" ref="demo_eq_05"/>
-        <field name="type_intervention">preventive</field>
-        <field name="technicien_id" ref="demo_employe_bamba"/>
-        <field name="date_debut">2025-05-12 18:00:00</field>
-        <field name="date_fin">2025-05-12 20:30:00</field>
-        <field name="cout">0</field>
-        <field name="rapport">Mise à jour IOS Cisco de la version 15.2(7) vers 15.2(7)E6. Opération réalisée en dehors des heures de bureau pour minimiser l'impact. Tests de connectivité post-intervention validés sur tous les VLANs.</field>
-        <field name="state">termine</field>
-    </record>
-
-    <record id="demo_interv_04" model="it.intervention">
-        <field name="name">Dépannage imprimante — bourrage papier récurrent</field>
+        <field name="name">Dépannage imprimante — bourrage papier</field>
         <field name="equipement_id" ref="demo_eq_04"/>
         <field name="type_intervention">corrective</field>
         <field name="technicien_id" ref="demo_employe_bamba"/>
-        <field name="date_debut">2025-05-20 14:00:00</field>
-        <field name="date_fin">2025-05-20 15:30:00</field>
+        <field name="date_debut" eval="(datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d 14:00:00')"/>
         <field name="cout">45000</field>
-        <field name="rapport">Nettoyage complet du circuit d'alimentation papier. Remplacement des rouleaux d'entraînement usés. Calibrage du capteur de papier. Test de 50 impressions consécutives sans incident. Équipement opérationnel.</field>
-        <field name="state">termine</field>
-    </record>
-
-    <record id="demo_interv_05" model="it.intervention">
-        <field name="name">Installation poste développeur — configuration complète</field>
-        <field name="equipement_id" ref="demo_eq_09"/>
-        <field name="type_intervention">preventive</field>
-        <field name="technicien_id" ref="demo_employe_konan"/>
-        <field name="date_debut">2025-06-02 09:00:00</field>
-        <field name="date_fin">2025-06-02 17:00:00</field>
-        <field name="cout">0</field>
-        <field name="rapport">Configuration initiale du poste développeur. Installation Windows 11 Pro, VS Code, Python 3.11, Git, PostgreSQL 16, Odoo 18 dev. Jonction au domaine Active Directory. Configuration VPN et accès aux dépôts GitLab internes. Remis à l'utilisateur avec documentation.</field>
-        <field name="state">termine</field>
+        <field name="rapport">Nettoyage du circuit papier, remplacement des rouleaux d'entraînement.</field>
+        <field name="state">en_cours</field>
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════════
-         HISTORIQUE DES AFFECTATIONS (pour eq_02 qui a changé de main)
+         TICKETS DE SUPPORT
          ═══════════════════════════════════════════════════════════════════ -->
-
-    <record id="demo_affectation_01" model="it.affectation">
+    <record id="demo_ticket_01" model="it.ticket">
+        <field name="subject">PC ne démarre plus après coupure de courant</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_siege"/>
         <field name="equipement_id" ref="demo_eq_02"/>
-        <field name="employe_id" ref="demo_employe_kouame"/>
-        <field name="departement_id" ref="demo_dept_compta"/>
-        <field name="date_affectation">2023-06-15</field>
-        <field name="motif">Affectation initiale à la prise en poste</field>
+        <field name="technicien_id" ref="demo_employe_bamba"/>
+        <field name="priority">3</field>
+        <field name="state">in_progress</field>
+        <field name="description">Suite à une coupure de courant ce matin, le poste comptabilité ne démarre plus du tout.</field>
+        <field name="date_deadline" eval="(datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d 17:00:00')"/>
+    </record>
+
+    <record id="demo_ticket_02" model="it.ticket">
+        <field name="subject">Imprimante : bourrages papier fréquents</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="site_id" ref="demo_site_baobab_usine"/>
+        <field name="equipement_id" ref="demo_eq_04"/>
+        <field name="priority">1</field>
+        <field name="state">new</field>
+        <field name="description">L'imprimante de l'usine fait des bourrages plusieurs fois par jour.</field>
+    </record>
+
+    <record id="demo_ticket_03" model="it.ticket">
+        <field name="subject">Demande d'augmentation de RAM sur le portable loué</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="site_id" ref="demo_site_lagune_entrepot"/>
+        <field name="equipement_id" ref="demo_eq_06"/>
+        <field name="technicien_id" ref="demo_employe_konan"/>
+        <field name="priority">2</field>
+        <field name="state">assigned</field>
+        <field name="description">Le portable loué rame avec nos applications métier, possibilité d'ajouter de la RAM ?</field>
+    </record>
+
+    <record id="demo_ticket_04" model="it.ticket">
+        <field name="subject">Connexion VPN instable</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="site_id" ref="demo_site_lagune_entrepot"/>
+        <field name="equipement_id" ref="demo_eq_08"/>
+        <field name="priority">2</field>
+        <field name="state">done</field>
+        <field name="description">Le VPN se déconnecte plusieurs fois par jour depuis l'entrepôt.</field>
+        <field name="resolution">Mise à jour du firmware FortiGate et reconfiguration du tunnel IPsec. Connexion stable depuis 5 jours.</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         LICENCES LOGICIELLES
+         ═══════════════════════════════════════════════════════════════════ -->
+    <record id="demo_license_01" model="it.license">
+        <field name="name">Microsoft 365 Business Premium</field>
+        <field name="license_type">subscription</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="equipement_id" ref="demo_eq_01"/>
+        <field name="seat_count">25</field>
+        <field name="date_start">2024-01-01</field>
+        <field name="date_expiration" eval="(datetime.now() + timedelta(days=15)).strftime('%Y-%m-%d')"/>
+        <field name="license_key">M365-BAOBAB-XXXX-1111</field>
+    </record>
+
+    <record id="demo_license_02" model="it.license">
+        <field name="name">Windows Server 2022 Standard</field>
+        <field name="license_type">perpetual</field>
+        <field name="partner_id" ref="demo_client_baobab"/>
+        <field name="equipement_id" ref="demo_eq_03"/>
+        <field name="seat_count">1</field>
+        <field name="date_start">2022-03-20</field>
+        <field name="license_key">WS2022-BAOBAB-XXXX-2222</field>
+    </record>
+
+    <record id="demo_license_03" model="it.license">
+        <field name="name">Antivirus Bitdefender GravityZone</field>
+        <field name="license_type">subscription</field>
+        <field name="partner_id" ref="demo_client_lagune"/>
+        <field name="seat_count">15</field>
+        <field name="date_start">2023-06-01</field>
+        <field name="date_expiration" eval="(datetime.now() - timedelta(days=5)).strftime('%Y-%m-%d')"/>
+        <field name="license_key">BD-LAGUNE-XXXX-3333</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         HISTORIQUE D'AFFECTATION
+         ═══════════════════════════════════════════════════════════════════ -->
+    <record id="demo_affectation_01" model="it.affectation">
+        <field name="equipement_id" ref="demo_eq_09"/>
+        <field name="employe_id" ref="demo_employe_yao"/>
+        <field name="departement_id" ref="demo_dept_dsi"/>
+        <field name="localisation">Open Space DSI — Poste 4</field>
+        <field name="date_affectation">2024-03-12</field>
+        <field name="motif">Affectation à la prise de poste développeur</field>
         <field name="active_line">True</field>
     </record>
 

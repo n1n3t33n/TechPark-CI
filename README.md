@@ -80,14 +80,20 @@ Ouvrir **http://localhost:8069**.
 3. Donner les droits IT : *Paramètres → Utilisateurs → (l'utilisateur) → onglet Autorisations → IT Parc → **IT Manager***.
 
 ### Se connecter en CLIENT (portail)
-1. Créer un utilisateur **type Portail** dont le *contact associé* est rattaché à une **société cliente** (ex. `Acme Corporation`).
+1. Créer un utilisateur **type Portail** dont le *contact associé* est rattaché à une **société cliente** (ex. `Baobab Industries SA`).
 2. Lui définir un mot de passe (bouton *Changer le mot de passe* en mode dev, ou *Renvoyer l'invitation*).
-3. S'y connecter via **http://localhost:8069/web/login**, puis ouvrir **http://localhost:8069/my**.
+3. S'y connecter via **http://localhost:8069/web/login**.
 4. Astuce dev : sur la fiche utilisateur, le bouton **« Se connecter en tant que »** ouvre directement sa session.
 
 > 🔑 Le portail filtre les données par **`commercial_partner_id`** (la société du client).
 > Pour qu'un client voie des données, les équipements / tickets / contrats correspondants
 > doivent avoir leur champ **Client** renseigné avec sa société.
+
+> 🏠 **Accueil client redirigé** : un utilisateur portail qui ouvre `/my` ou `/my/home`
+> est automatiquement redirigé vers **`/my/it-parc`** (son parc IT devient sa page d'accueil).
+> Les utilisateurs internes conservent l'accueil natif Odoo.
+> Un raccourci **« Mon parc IT »** et **« Mon compte »** est ajouté dans le menu déroulant
+> utilisateur (en haut à droite).
 
 ---
 
@@ -104,8 +110,8 @@ Ouvrir **http://localhost:8069**.
 
 | Modèle | Rôle |
 |---|---|
-| `it.equipement` | Équipement informatique (workflow, garantie, client, site, liens vente/stock) |
-| `it.affectation` | Historique des affectations d'un équipement à un employé |
+| `it.equipement` | Équipement informatique (catégories détaillées, caractéristiques techniques, workflow 5 états dont location, garantie, client, site, liens vente/stock) |
+| `it.affectation` | Historique des affectations d'un équipement à un employé (+ localisation précise) |
 | `it.intervention` | Intervention / maintenance (corrective ou préventive) |
 | `it.contrat` | Contrat fournisseur (ou client) avec suivi d'expiration |
 | `it.alerte` | Alertes générées (garanties, contrats) |
@@ -118,13 +124,26 @@ Ouvrir **http://localhost:8069**.
 ## Fonctionnalités
 
 ### Équipements
-- Workflow 4 étapes : Brouillon → Affecté → En maintenance → Retiré
+- Workflow **5 états** : Brouillon → Affecté → **En location** → En maintenance → Retiré
+- **Catégories détaillées** : ordinateur portable, ordinateur fixe, serveur, imprimante/scanner,
+  switch, routeur/firewall, point d'accès Wi-Fi, téléphone IP, écran, périphérique, autre
+- **Caractéristiques techniques** dédiées et **affichées selon la catégorie** :
+  - *Informatique* : processeur (CPU), RAM (Go), stockage (Go), type (SSD/HDD/NVMe), système d'exploitation
+  - *Réseau* : adresse IP, adresse MAC, nombre de ports
+  - *Écran* : taille en pouces
+  - champ libre *Spécifications complémentaires*
+- **Location** (état « En location ») : locataire, date de début/fin, loyer mensuel,
+  alerte « fin de location proche » (≤ 30 j), boutons *Mettre en location* / *Fin de location*
 - Suivi des garanties avec alertes automatiques (cron quotidien)
-- Historique complet des affectations
+- Historique des affectations (avec **localisation précise** : bureau, salle…)
 - **Rattachement à un Client et un Site client**
 - **Liens vers la Commande de vente et le Bon de livraison** (intégration `sale` / `stock`)
 - **Onglets Tickets et Licences** sur la fiche
-- Vue kanban (regroupée par état), liste, formulaire, recherche
+- Vue kanban (regroupée par état), liste (colonnes specs optionnelles), formulaire, recherche
+
+> Le champ « Site » texte (3 villes en dur) a été **retiré** ; la localisation se gère
+> désormais par le **Site client** (`it.site`) et la **localisation précise** dans l'historique
+> d'affectation.
 
 ### Sites client *(nouveau)*
 - Un site appartient à un client (société) et regroupe ses équipements et tickets
@@ -154,25 +173,35 @@ Ouvrir **http://localhost:8069**.
 - Alertes de renouvellement automatiques
 - **Client, Site et Facture liés** (intégration `account`)
 
-### Portail client *(nouveau)*
-Accessible aux utilisateurs portail sur **`/my`** puis **`/my/it-parc`** :
-| Page | URL |
-|---|---|
-| Résumé (cartes Sites / Machines / Tickets ouverts / Licences) | `/my/it-parc` |
-| Mes machines | `/my/it-parc/equipements` |
-| Mes tickets | `/my/it-parc/tickets` |
-| Créer un ticket | `/my/it-parc/tickets/new` |
-| Mes contrats | `/my/it-parc/contrats` |
-| Mes interventions | `/my/it-parc/interventions` |
-| Mes licences | `/my/it-parc/licenses` |
+### Portail client *(front-end personnalisé)*
+Espace client redesigné (CSS dédié `static/src/portal/portal.css`, hors thème natif Odoo) :
+héro coloré, navigation par onglets, **cartes KPI cliquables**, tableaux stylisés et
+**badges d'état/priorité**. Accessible aux utilisateurs portail :
 
-Les données sont filtrées par société (`child_of`) et exposées en lecture ;
-la création de ticket valide les champs obligatoires et l'appartenance du site/machine au client.
+| Page | URL | Cliquable |
+|---|---|---|
+| Résumé (cartes Machines / Tickets ouverts / Contrats / Licences) | `/my/it-parc` | cartes → listes |
+| Mes machines | `/my/it-parc/equipements` | ligne → détail machine |
+| Détail d'une machine | `/my/it-parc/equipement/<id>` | — |
+| Mes tickets | `/my/it-parc/tickets` | ligne → détail ticket |
+| Détail d'un ticket | `/my/it-parc/ticket/<id>` | — |
+| Créer un ticket | `/my/it-parc/tickets/new` | — |
+| Mes contrats | `/my/it-parc/contrats` | — |
+| Mes interventions | `/my/it-parc/interventions` | — |
+| Mes licences | `/my/it-parc/licenses` | — |
+
+- Les données sont filtrées par société (`child_of`) et exposées en lecture (`sudo`) ;
+  les pages de détail re-vérifient l'appartenance au client (sécurité).
+- La création de ticket valide les champs obligatoires et l'appartenance du site/machine.
+- `/my` et `/my/home` redirigent le client vers `/my/it-parc` ; un raccourci
+  **« Mon parc IT »** + **« Mon compte »** est ajouté au menu utilisateur du portail.
 
 ### Wizards
 - Réaffectation d'équipement
 - Renouvellement de contrat
-- Import CSV en masse
+- **Import CSV en masse** : colonnes obligatoires `name`, `categorie` ; optionnelles
+  `marque, modele, numero_serie, cpu, ram_go, stockage_go, valeur_achat, date_fin_garantie`.
+  Possibilité de **rattacher tous les équipements importés à un Client + Site**.
 - Scan manuel des alertes
 
 ### Rapports PDF (QWeb)
@@ -194,8 +223,11 @@ la création de ticket valide les champs obligatoires et l'appartenance du site/
 > **Accès :** menu **IT Parc** → section **Exports Excel**.
 
 ### Dashboard OWL
-- 7 KPIs : total équipements, affectés, en maintenance, retirés, garanties expirées, interventions ouvertes, coût total maintenance
-- 2 graphiques : répartition par état, répartition par catégorie
+- 8 KPIs **cliquables** (ouvrent la liste filtrée correspondante) : total équipements,
+  affectés, **en location**, en maintenance, garanties expirées, alertes nouvelles,
+  contrats urgents, interventions ce mois ; + coût total maintenance
+- 2 graphiques : répartition par catégorie (donut), interventions sur 6 mois (barres)
+- Top 5 équipements les plus maintenus — **lignes cliquables** vers la fiche
 - Accès via **IT Parc → Dashboard**
 
 ---
@@ -205,25 +237,42 @@ la création de ticket valide les champs obligatoires et l'appartenance du site/
 **Back-office (employé)**
 1. Donner le groupe *IT Manager* à l'utilisateur.
 2. Créer un **Site client** rattaché à une société.
-3. Sur un **Équipement**, renseigner *Client* + *Site* (vérifier le filtrage des sites).
-4. Créer une **Licence** : expiration dans 15 jours ⇒ état *Expire bientôt* ; date passée ⇒ *Expirée*.
-5. Créer un **Ticket**, vérifier la réf `TCK/…`, dérouler le workflow Assigner → Démarrer → Résoudre.
+3. Sur un **Équipement** : choisir une catégorie « Ordinateur portable » ⇒ les champs
+   *CPU / RAM / Stockage / OS* apparaissent ; choisir « Switch réseau » ⇒ *IP / MAC / ports*.
+4. Renseigner *Client* + *Site* (vérifier le filtrage des sites par client).
+5. **Location** : bouton *Mettre en location* (locataire requis) ⇒ état *En location* + bloc location.
+6. Créer une **Licence** : expiration dans 15 j ⇒ *Expire bientôt* ; date passée ⇒ *Expirée*.
+7. Créer un **Ticket**, vérifier la réf `TCK/…`, dérouler *Assigner → Démarrer → Résoudre*.
+8. **Dashboard** : cliquer une carte KPI (ex. « En location ») ⇒ ouvre la liste filtrée.
 
 **Portail (client)**
-6. Créer/utiliser un utilisateur portail rattaché à la même société.
-7. Ouvrir `/my` ⇒ carte *Mon parc informatique* ⇒ parcourir les pages `/my/it-parc/*`.
-8. Créer un ticket depuis `/my/it-parc/tickets/new` ⇒ vérifier sa présence côté back-office.
-9. Vérifier l'isolation : un client d'une autre société ne voit pas les données.
+9. Créer/utiliser un utilisateur portail rattaché à la même société.
+10. Se connecter ⇒ on arrive directement sur `/my/it-parc` (redirection depuis `/my`).
+11. Cliquer une **carte KPI**, puis une **ligne machine/ticket** ⇒ page de détail.
+12. Créer un ticket depuis `/my/it-parc/tickets/new` ⇒ vérifier sa présence côté back-office.
+13. Vérifier l'isolation : un client d'une autre société ne voit pas les données.
 
 **Technique**
-10. `... -u it_parc --stop-after-init --log-level=warn` ⇒ aucun warning `it_parc`.
+14. `... -u it_parc --stop-after-init --log-level=warn` ⇒ aucun warning `it_parc` *(vérifié)*.
 
 ---
 
 ## Données de démo
-Le fichier `data/it_parc_demo.xml` contient des équipements variés (postes, serveurs,
-imprimantes, réseau), des interventions, des contrats fournisseurs et des alertes,
-pour une démonstration sans saisie manuelle.
+Le fichier `data/it_parc_demo.xml` fournit un jeu complet et cohérent pour tester sans saisie :
+- **2 clients** (`Baobab Industries SA`, `Lagune Distribution`) avec contacts
+- **3 sites client**
+- **10 équipements** variés et renseignés (CPU/RAM/stockage, IP/ports, écran…),
+  dont **1 en location** et **1 retiré**
+- **3 contrats**, **3 interventions**, **4 tickets** (états variés), **3 licences**
+  (active / expire bientôt / expirée)
+
+> ⚠️ **Important** : les données de démo ne se chargent **qu'à la première installation**
+> d'une base avec la démo activée. Sur une base existante où le module est déjà installé
+> **sans** démo (cas de la base `odoo`), elles n'apparaîtront pas — utilise une base neuve :
+> ```powershell
+> .\venv\Scripts\python.exe odoo-bin -c odoo.conf -d itparc_demo -i it_parc
+> ```
+> (Odoo crée la base et charge la démo automatiquement.)
 
 ---
 
@@ -240,12 +289,19 @@ relier équipements, contrats et interventions aux commandes, livraisons et fact
 - Vues kanban en syntaxe Odoo 18 (`<t t-name="card">`).
 - Chatter via la balise `<chatter/>`.
 - Encarts d'information accessibles (`role="status"` sur les blocs `alert`).
-- Templates portail basés sur `portal.portal_layout`, `portal.portal_table` et le mécanisme
-  de compteurs `placeholder_count`.
+- Portail basé sur `portal.portal_layout` + CSS personnalisé ; héritages via xpath robustes
+  (`//div[@role='menu']`) et mécanisme de compteurs `placeholder_count`.
+- `external_dependencies` déclare `xlsxwriter` (le module ne casse plus si la lib manque).
 
-### Champs Selection dans les rapports PDF
-Les valeurs Selection (Catégorie, Site, Type, État) sont converties en libellés lisibles
-via des dictionnaires dans les templates QWeb.
+### Champs Selection dans les rapports / exports
+Les valeurs Selection (Catégorie, État…) sont converties en libellés lisibles via
+`record._fields['champ'].selection` — les libellés restent corrects même si on ajoute
+de nouvelles catégories/états (plus de dictionnaires figés à maintenir).
+
+### Champs calculés stockés
+`jours_garantie_restants`, `garantie_expiree`, `jours_avant_fin_location` et
+`location_bientot_finie` sont **stockés** (`store=True`) afin d'être filtrables/searchables.
+Ils dépendent de dates ; le **cron quotidien** rafraîchit les valeurs dérivées du jour courant.
 
 ### Compatibilité PDF
 Templates compatibles wkhtmltopdf et Chromium (moteur PDF d'Odoo 17/18).

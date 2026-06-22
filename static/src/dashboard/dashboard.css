@@ -3,7 +3,8 @@
 .o_it_parc_dashboard {
     padding: 24px;
     background: #f4f6f9;
-    min-height: 100vh;
+    height: 100%;
+    overflow-y: auto;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -35,9 +36,15 @@
 /* ─── KPI Cards ──────────────────────────────────────────────────────────── */
 .o_kpi_row {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     gap: 16px;
     margin-bottom: 16px;
+}
+@media (max-width: 1400px) {
+    .o_kpi_row { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 900px) {
+    .o_kpi_row { grid-template-columns: repeat(2, 1fr); }
 }
 .o_kpi_row_wide {
     grid-template-columns: repeat(2, 1fr);
@@ -58,6 +65,8 @@
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
+.o_kpi_clickable { cursor: pointer; }
+.o_kpi_clickable:active { transform: translateY(-1px); }
 
 .o_kpi_wide { padding: 24px 28px; }
 
@@ -86,6 +95,7 @@
 /* Couleurs des cartes */
 .o_kpi_blue   { border-color: #1F4E79; color: #1F4E79; }
 .o_kpi_green  { border-color: #28a745; color: #28a745; }
+.o_kpi_cyan   { border-color: #0dcaf0; color: #0a93b0; }
 .o_kpi_orange { border-color: #fd7e14; color: #fd7e14; }
 .o_kpi_red    { border-color: #dc3545; color: #dc3545; }
 .o_kpi_purple { border-color: #6f42c1; color: #6f42c1; }
@@ -251,6 +261,8 @@
 .o_dashboard_table tbody tr:hover {
     background: #f8f9fa;
 }
+.o_row_clickable { cursor: pointer; }
+.o_row_clickable:hover { background: #eef4fb !important; }
 .o_dashboard_table tbody tr:last-child td {
     border-bottom: none;
 }

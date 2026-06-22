@@ -28,19 +28,15 @@
     <table class="table table-sm table-bordered">
         <tr>
             <th style="width:30%; background:#f8f9fa;">Catégorie</th>
-            <td><t t-esc="dict(poste_travail='Poste de travail', serveur='Serveur', imprimante='Imprimante', reseau='Équipement réseau', telephone='Téléphone IP', autre='Autre').get(doc.categorie, doc.categorie or 'N/A')"/></td>
+            <td><t t-esc="dict(doc._fields['categorie'].selection).get(doc.categorie, doc.categorie or 'N/A')"/></td>
             <th style="width:30%; background:#f8f9fa;">Marque / Modèle</th>
             <td><t t-esc="(doc.marque or '') + ' ' + (doc.modele or '')"/></td>
         </tr>
         <tr>
             <th style="background:#f8f9fa;">Numéro de série</th>
             <td><t t-esc="doc.numero_serie or 'N/A'"/></td>
-            <th style="background:#f8f9fa;">Site</th>
-            <td><t t-esc="dict(abidjan_cocody='Abidjan - Cocody', abidjan_plateau='Abidjan - Plateau', bouake='Bouaké').get(doc.site, doc.site or 'N/A')"/></td>
-        </tr>
-        <tr>
-            <th style="background:#f8f9fa;">Localisation</th>
-            <td colspan="3"><t t-esc="doc.localisation or 'N/A'"/></td>
+            <th style="background:#f8f9fa;">Client / Site</th>
+            <td><t t-esc="' / '.join([x for x in [doc.partner_id.name, doc.site_id.name] if x]) or 'N/A'"/></td>
         </tr>
     </table>
 

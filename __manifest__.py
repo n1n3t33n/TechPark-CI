@@ -27,6 +27,9 @@
         'stock',
         'account',
     ],
+    'external_dependencies': {
+        'python': ['xlsxwriter'],
+    },
     'data': [
         # Sécurité - toujours en premier
         'security/security_groups.xml',
@@ -73,6 +76,9 @@
             'it_parc/static/src/dashboard/dashboard.js',
             'it_parc/static/src/dashboard/dashboard.xml',
             'it_parc/static/src/dashboard/dashboard.css',
+        ],
+        'web.assets_frontend': [
+            'it_parc/static/src/portal/portal.css',
         ],
     },
     'installable': True,

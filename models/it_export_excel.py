@@ -56,6 +56,7 @@ class ItExportExcel(models.AbstractModel):
         fmt_etat = {
             'brouillon':  workbook.add_format({'border':1,'bg_color':'#D9D9D9','align':'center'}),
             'affecte':    workbook.add_format({'border':1,'bg_color':'#E2EFDA','align':'center'}),
+            'location':   workbook.add_format({'border':1,'bg_color':'#DEEBF7','align':'center'}),
             'maintenance':workbook.add_format({'border':1,'bg_color':'#FFF2CC','align':'center'}),
             'retire':     workbook.add_format({'border':1,'bg_color':'#FFE0E0','align':'center'}),
         }
@@ -70,11 +71,11 @@ class ItExportExcel(models.AbstractModel):
         colonnes = [
             ('Référence',      15),
             ('Nom',            25),
-            ('Catégorie',      15),
+            ('Catégorie',      18),
             ('Marque',         12),
             ('Modèle',         15),
             ('N° Série',       18),
-            ('Site',           18),
+            ('Client / Site',  22),
             ('Employé affecté',20),
             ('Département',    18),
             ('Date achat',     13),
@@ -93,11 +94,16 @@ class ItExportExcel(models.AbstractModel):
         for row, eq in enumerate(equipements, start=4):
             sheet.write(row, 0,  eq.reference or '',          fmt_normal)
             sheet.write(row, 1,  eq.name or '',               fmt_normal)
-            sheet.write(row, 2,  eq.categorie or '',          fmt_normal)
+            categorie_label = dict(eq._fields['categorie'].selection).get(eq.categorie, eq.categorie or '')
+            site_label = ' / '.join(filter(None, [
+                eq.partner_id.name if eq.partner_id else '',
+                eq.site_id.name if eq.site_id else '',
+            ]))
+            sheet.write(row, 2,  categorie_label,             fmt_normal)
             sheet.write(row, 3,  eq.marque or '',             fmt_normal)
             sheet.write(row, 4,  eq.modele or '',             fmt_normal)
             sheet.write(row, 5,  eq.numero_serie or '',       fmt_normal)
-            sheet.write(row, 6,  eq.site or '',               fmt_normal)
+            sheet.write(row, 6,  site_label,                  fmt_normal)
             sheet.write(row, 7,  eq.employe_id.name if eq.employe_id else '', fmt_normal)
             sheet.write(row, 8,  eq.departement_id.name if eq.departement_id else '', fmt_normal)
 
@@ -122,7 +128,8 @@ class ItExportExcel(models.AbstractModel):
                 sheet.write_blank(row, 11, None, fmt_normal)
                 sheet.write_blank(row, 12, None, fmt_normal)
 
-            sheet.write(row, 13, eq.state or '',
+            etat_label = dict(eq._fields['state'].selection).get(eq.state, eq.state or '')
+            sheet.write(row, 13, etat_label,
                         fmt_etat.get(eq.state, fmt_normal))
 
         # ── Figer la ligne d'en-tête ──────────────────────────────────────

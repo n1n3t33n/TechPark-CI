@@ -8,11 +8,14 @@
                 <sheet>
                     <group string="Format attendu du CSV">
                         <div colspan="2" class="alert alert-info" role="status">
-                            <p>Colonnes <b>obligatoires</b> : <code>name</code>, <code>categorie</code>, <code>site</code></p>
-                            <p>Colonnes <b>optionnelles</b> : <code>marque</code>, <code>modele</code>, <code>numero_serie</code>, <code>valeur_achat</code>, <code>date_fin_garantie</code></p>
-                            <p>Valeurs <code>categorie</code> : poste_travail, serveur, imprimante, reseau, telephone, autre</p>
-                            <p>Valeurs <code>site</code> : abidjan_cocody, abidjan_plateau, bouake</p>
+                            <p>Colonnes <b>obligatoires</b> : <code>name</code>, <code>categorie</code></p>
+                            <p>Colonnes <b>optionnelles</b> : <code>marque</code>, <code>modele</code>, <code>numero_serie</code>, <code>cpu</code>, <code>ram_go</code>, <code>stockage_go</code>, <code>valeur_achat</code>, <code>date_fin_garantie</code></p>
+                            <p>Valeurs <code>categorie</code> : pc_portable, pc_fixe, serveur, imprimante, switch, routeur, point_acces, telephone, ecran, peripherique, autre</p>
                         </div>
+                    </group>
+                    <group string="Rattachement (appliqué à tous les équipements importés)">
+                        <field name="partner_id"/>
+                        <field name="site_id"/>
                     </group>
                     <group>
                         <field name="fichier_csv" widget="binary" filename="nom_fichier"/>

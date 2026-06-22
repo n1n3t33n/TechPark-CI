@@ -6,11 +6,25 @@ from odoo.addons.portal.controllers.portal import CustomerPortal
 
 class ItParcPortal(CustomerPortal):
 
+    # ─── Helpers ──────────────────────────────────────────────────────────────
     def _portal_partner(self):
         return request.env.user.partner_id.commercial_partner_id
 
-    def _portal_domain(self, field='partner_id'):
-        return [(field, 'child_of', self._portal_partner().id)]
+    def _it_counts(self, partner):
+        env = request.env
+        dom = [('partner_id', 'child_of', partner.id)]
+        tickets_ouverts = env['it.ticket'].sudo().search_count(
+            dom + [('state', 'in', ['new', 'assigned', 'in_progress'])]
+        )
+        return {
+            'sites': env['it.site'].sudo().search_count(dom),
+            'equipements': env['it.equipement'].sudo().search_count(dom),
+            'tickets_ouverts': tickets_ouverts,
+            'tickets': env['it.ticket'].sudo().search_count(dom),
+            'contrats': env['it.contrat'].sudo().search_count(dom),
+            'interventions': env['it.intervention'].sudo().search_count(dom),
+            'licenses': env['it.license'].sudo().search_count(dom),
+        }
 
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)
@@ -29,19 +43,31 @@ class ItParcPortal(CustomerPortal):
     def _prepare_it_portal_values(self):
         partner = self._portal_partner()
         env = request.env
+        dom = [('partner_id', 'child_of', partner.id)]
         values = self._prepare_portal_layout_values()
         values.update({
             'page_name': 'it_parc',
             'partner': partner,
-            'sites': env['it.site'].sudo().search([('partner_id', 'child_of', partner.id)]),
-            'equipements': env['it.equipement'].sudo().search([('partner_id', 'child_of', partner.id)]),
-            'tickets': env['it.ticket'].sudo().search([('partner_id', 'child_of', partner.id)], limit=20),
-            'contrats': env['it.contrat'].sudo().search([('partner_id', 'child_of', partner.id)], limit=20),
-            'interventions': env['it.intervention'].sudo().search([('partner_id', 'child_of', partner.id)], limit=20),
-            'licenses': env['it.license'].sudo().search([('partner_id', 'child_of', partner.id)], limit=20),
+            'counts': self._it_counts(partner),
+            'sites': env['it.site'].sudo().search(dom),
+            'equipements': env['it.equipement'].sudo().search(dom),
+            'tickets': env['it.ticket'].sudo().search(dom, limit=40),
+            'contrats': env['it.contrat'].sudo().search(dom, limit=40),
+            'interventions': env['it.intervention'].sudo().search(dom, limit=40),
+            'licenses': env['it.license'].sudo().search(dom, limit=40),
         })
         return values
 
+    # ─── Redirection : le parc IT devient l'accueil du client ──────────────────
+    @http.route(['/my', '/my/home'], type='http', auth='user', website=True)
+    def home(self, **kw):
+        # Les utilisateurs portail (share) sont redirigés vers leur parc IT.
+        # Les utilisateurs internes gardent l'accueil natif Odoo.
+        if request.env.user.share:
+            return request.redirect('/my/it-parc')
+        return super().home(**kw)
+
+    # ─── Pages du parc IT ──────────────────────────────────────────────────────
     @http.route(['/my/it-parc'], type='http', auth='user', website=True)
     def portal_it_parc_home(self, **kw):
         return request.render('it_parc.portal_it_parc_home', self._prepare_it_portal_values())
@@ -75,6 +101,32 @@ class ItParcPortal(CustomerPortal):
         values = self._prepare_it_portal_values()
         values['page_name'] = 'it_parc_tickets'
         return request.render('it_parc.portal_it_parc_tickets', values)
+
+    @http.route(['/my/it-parc/ticket/<int:ticket_id>'], type='http', auth='user', website=True)
+    def portal_it_parc_ticket_detail(self, ticket_id, **kw):
+        partner = self._portal_partner()
+        ticket = request.env['it.ticket'].sudo().search([
+            ('id', '=', ticket_id),
+            ('partner_id', 'child_of', partner.id),
+        ], limit=1)
+        if not ticket:
+            return request.redirect('/my/it-parc/tickets')
+        values = self._prepare_it_portal_values()
+        values.update({'page_name': 'it_parc_ticket', 'ticket': ticket})
+        return request.render('it_parc.portal_it_parc_ticket_detail', values)
+
+    @http.route(['/my/it-parc/equipement/<int:equipement_id>'], type='http', auth='user', website=True)
+    def portal_it_parc_equipement_detail(self, equipement_id, **kw):
+        partner = self._portal_partner()
+        equipement = request.env['it.equipement'].sudo().search([
+            ('id', '=', equipement_id),
+            ('partner_id', 'child_of', partner.id),
+        ], limit=1)
+        if not equipement:
+            return request.redirect('/my/it-parc/equipements')
+        values = self._prepare_it_portal_values()
+        values.update({'page_name': 'it_parc_equipement', 'equipement': equipement})
+        return request.render('it_parc.portal_it_parc_equipement_detail', values)
 
     @http.route(['/my/it-parc/tickets/new'], type='http', auth='user', website=True, methods=['GET', 'POST'])
     def portal_it_parc_ticket_new(self, **post):
@@ -110,4 +162,3 @@ class ItParcPortal(CustomerPortal):
             ticket.message_post(body=_('Ticket créé depuis le portail client.'))
             return request.redirect('/my/it-parc/tickets')
         return request.render('it_parc.portal_it_parc_ticket_new', values)
-
