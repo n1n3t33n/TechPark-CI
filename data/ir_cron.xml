@@ -7,9 +7,13 @@
             <field name="model_id" ref="model_it_alerte"/>
             <field name="state">code</field>
             <field name="code">
-                model.env['wizard.scan.alertes'].create({
-                    'delai_jours': 60
-                }).action_scanner()
+# 1. Rafraîchir les champs calculés dépendant de la date du jour
+model.env['it.equipement']._cron_mise_a_jour_equipements()
+model.env['it.license']._cron_mise_a_jour_licences()
+# 2. Recalculer + passer les contrats échus à l'état 'Expiré'
+model.env['it.contrat']._cron_mise_a_jour_contrats()
+# 3. Générer les alertes de garantie et de contrat
+model.env['wizard.scan.alertes'].create({'delai_jours': 60}).action_scanner()
             </field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>

@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <form string="Contrat fournisseur">
                 <header>
+                    <button name="action_ouvrir_renouvellement" string="Renouveler" type="object"
+                            class="btn-primary" invisible="state in ('resilie',)"/>
                     <button name="action_resilier" string="Résilier" type="object"
                             class="btn-danger" invisible="state == 'resilie'"/>
                     <button name="action_export_contrats_excel"

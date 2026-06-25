@@ -30,6 +30,15 @@ class ItLicense(models.Model):
     ], string='État', compute='_compute_state', store=True)
     notes = fields.Text(string='Notes')
 
+    @api.model
+    def _cron_mise_a_jour_licences(self):
+        """Recalcule l'état (active / expire bientôt / expirée) de toutes les
+        licences. Appelé quotidiennement par la tâche planifiée."""
+        licences = self.search([])
+        licences.modified(['date_expiration'])
+        licences.mapped('state')
+        return True
+
     @api.depends('date_expiration')
     def _compute_state(self):
         today = date.today()

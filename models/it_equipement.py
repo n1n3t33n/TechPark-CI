@@ -250,3 +250,25 @@ class ItEquipement(models.Model):
     def action_remettre_en_brouillon(self):
         for rec in self:
             rec.state = 'brouillon'
+
+    def action_ouvrir_reaffectation(self):
+        """Ouvre le wizard de réaffectation pré-rempli pour cet équipement."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Réaffecter l\'équipement',
+            'res_model': 'wizard.reaffectation',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_id': self.id, 'active_model': 'it.equipement'},
+        }
+
+    @api.model
+    def _cron_mise_a_jour_equipements(self):
+        """Recalcule les compteurs de garantie et de location dépendant de la
+        date du jour. Appelé quotidiennement par la tâche planifiée."""
+        equipements = self.search([])
+        equipements.modified(['date_fin_garantie', 'date_fin_location'])
+        equipements.mapped('jours_garantie_restants')
+        equipements.mapped('jours_avant_fin_location')
+        return True

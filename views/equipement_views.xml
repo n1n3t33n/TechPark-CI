@@ -26,6 +26,10 @@
                             string="Mettre en maintenance"
                             type="object"
                             invisible="state not in ('brouillon','affecte','location')"/>
+                    <button name="action_ouvrir_reaffectation"
+                            string="Réaffecter"
+                            type="object"
+                            invisible="state not in ('affecte','location','maintenance')"/>
                     <button name="action_retirer"
                             string="Retirer du parc"
                             type="object"

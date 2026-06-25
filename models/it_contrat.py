@@ -66,5 +66,34 @@ class ItContrat(models.Model):
                 rec.jours_restants = 0
                 rec.expire = False
 
+    @api.model
+    def _cron_mise_a_jour_contrats(self):
+        """Recalcule les jours restants et passe à 'Expiré' les contrats échus.
+        Appelé quotidiennement par la tâche planifiée."""
+        contrats = self.search([])
+        # Force le recalcul des champs stockés dépendant de la date du jour
+        contrats.modified(['date_fin'])
+        contrats.mapped('jours_restants')
+        # Auto-passage à l'état 'Expiré' (sans toucher aux résiliés/renouvelés)
+        today = fields.Date.today()
+        a_expirer = contrats.filtered(
+            lambda c: c.state == 'actif' and c.date_fin and c.date_fin < today
+        )
+        if a_expirer:
+            a_expirer.write({'state': 'expire'})
+        return True
+
     def action_resilier(self):
         self.state = 'resilie'
+
+    def action_ouvrir_renouvellement(self):
+        """Ouvre le wizard de renouvellement pré-rempli pour ce contrat."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Renouveler le contrat',
+            'res_model': 'wizard.renouvellement',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_id': self.id, 'active_model': 'it.contrat'},
+        }
