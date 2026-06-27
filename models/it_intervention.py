@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 class ItIntervention(models.Model):
     _name = 'it.intervention'
@@ -64,6 +65,14 @@ class ItIntervention(models.Model):
         ('termine',   'Terminée'),
         ('annule',    'Annulée'),
     ], string='État', default='planifie', tracking=True)
+
+    @api.constrains('date_debut', 'date_fin')
+    def _check_dates(self):
+        for rec in self:
+            if rec.date_debut and rec.date_fin and rec.date_fin < rec.date_debut:
+                raise ValidationError(_(
+                    "La date de fin ne peut pas être antérieure à la date de début."
+                ))
 
     @api.depends('date_debut', 'date_fin')
     def _compute_duree(self):

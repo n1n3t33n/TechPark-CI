@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 from datetime import date
 
 class ItContrat(models.Model):
@@ -53,6 +54,20 @@ class ItContrat(models.Model):
         ('renouvele','Renouvelé'),
         ('resilie',  'Résilié'),
     ], string='État', default='actif', tracking=True)
+
+    @api.constrains('date_debut', 'date_fin')
+    def _check_dates(self):
+        for rec in self:
+            if rec.date_debut and rec.date_fin and rec.date_fin < rec.date_debut:
+                raise ValidationError(_(
+                    "La date de fin du contrat ne peut pas être antérieure à la date de début."
+                ))
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        """Vide le site si celui-ci n'appartient pas au nouveau client."""
+        if self.site_id and self.site_id.partner_id != self.partner_id:
+            self.site_id = False
 
     @api.depends('date_fin')
     def _compute_jours_restants(self):

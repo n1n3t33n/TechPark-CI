@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from datetime import date
 
 
@@ -209,6 +209,36 @@ class ItEquipement(models.Model):
     def _compute_cout_total(self):
         for rec in self:
             rec.cout_total_maintenance = sum(rec.intervention_ids.mapped('cout'))
+
+    # ─── Contraintes d'intégrité ──────────────────────────────────────────────
+    @api.constrains('numero_serie')
+    def _check_numero_serie_unique(self):
+        for rec in self:
+            if rec.numero_serie:
+                doublon = self.search([
+                    ('numero_serie', '=', rec.numero_serie),
+                    ('id', '!=', rec.id),
+                ], limit=1)
+                if doublon:
+                    raise ValidationError(_(
+                        "Le numéro de série « %(serie)s » est déjà utilisé par l'équipement « %(eq)s ».",
+                        serie=rec.numero_serie, eq=doublon.name,
+                    ))
+
+    @api.constrains('date_debut_location', 'date_fin_location')
+    def _check_dates_location(self):
+        for rec in self:
+            if (rec.date_debut_location and rec.date_fin_location
+                    and rec.date_fin_location < rec.date_debut_location):
+                raise ValidationError(_(
+                    "La fin de location ne peut pas être antérieure au début de location."
+                ))
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        """Vide le site si celui-ci n'appartient pas au nouveau client."""
+        if self.site_id and self.site_id.partner_id != self.partner_id:
+            self.site_id = False
 
     # ─── Séquence automatique ─────────────────────────────────────────────────
     @api.model_create_multi

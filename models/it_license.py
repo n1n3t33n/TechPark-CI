@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class ItLicense(models.Model):
@@ -29,6 +30,15 @@ class ItLicense(models.Model):
         ('expired', 'Expirée'),
     ], string='État', compute='_compute_state', store=True)
     notes = fields.Text(string='Notes')
+
+    @api.constrains('date_start', 'date_expiration')
+    def _check_dates(self):
+        for rec in self:
+            if (rec.date_start and rec.date_expiration
+                    and rec.date_expiration < rec.date_start):
+                raise ValidationError(_(
+                    "La date d'expiration ne peut pas être antérieure à la date de début."
+                ))
 
     @api.model
     def _cron_mise_a_jour_licences(self):

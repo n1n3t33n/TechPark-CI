@@ -35,6 +35,14 @@ class ItTicket(models.Model):
     resolution = fields.Text(string='Résolution')
     date_deadline = fields.Datetime(string='Échéance SLA')
 
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        """Vide le site et l'équipement s'ils n'appartiennent pas au nouveau client."""
+        if self.site_id and self.site_id.partner_id != self.partner_id:
+            self.site_id = False
+        if self.equipement_id and self.equipement_id.partner_id != self.partner_id:
+            self.equipement_id = False
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:

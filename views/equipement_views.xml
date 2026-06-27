@@ -113,7 +113,7 @@
                     </group>
 
                     <group string="Location"
-                           invisible="state != 'location' and not locataire_id">
+                           invisible="state not in ('brouillon','affecte','location')">
                         <group>
                             <field name="locataire_id"/>
                             <field name="loyer_mensuel"/>
