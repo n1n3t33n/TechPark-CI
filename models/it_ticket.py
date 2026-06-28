@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from odoo import api, fields, models
 
 
@@ -34,6 +36,30 @@ class ItTicket(models.Model):
     description = fields.Text(string='Description', required=True)
     resolution = fields.Text(string='Résolution')
     date_deadline = fields.Datetime(string='Échéance SLA')
+    en_retard = fields.Boolean(
+        string='En retard (SLA dépassé)',
+        compute='_compute_en_retard',
+        store=True,
+    )
+
+    @api.depends('date_deadline', 'state')
+    def _compute_en_retard(self):
+        now = datetime.now()
+        for rec in self:
+            rec.en_retard = bool(
+                rec.date_deadline
+                and rec.state not in ('done', 'cancelled')
+                and rec.date_deadline < now
+            )
+
+    @api.model
+    def _cron_mise_a_jour_tickets(self):
+        """Recalcule le drapeau « en retard » des tickets ouverts.
+        Appelé quotidiennement par la tâche planifiée."""
+        tickets = self.search([('state', 'not in', ('done', 'cancelled'))])
+        tickets.modified(['date_deadline'])
+        tickets.mapped('en_retard')
+        return True
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -42,6 +68,15 @@ class ItTicket(models.Model):
             self.site_id = False
         if self.equipement_id and self.equipement_id.partner_id != self.partner_id:
             self.equipement_id = False
+
+    @api.onchange('equipement_id')
+    def _onchange_equipement_id(self):
+        """Pré-remplit le client (si vide) et le site depuis l'équipement choisi."""
+        if self.equipement_id:
+            if self.equipement_id.partner_id and not self.partner_id:
+                self.partner_id = self.equipement_id.partner_id
+            if self.equipement_id.site_id:
+                self.site_id = self.equipement_id.site_id
 
     @api.model_create_multi
     def create(self, vals_list):

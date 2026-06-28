@@ -31,6 +31,12 @@ class ItLicense(models.Model):
     ], string='État', compute='_compute_state', store=True)
     notes = fields.Text(string='Notes')
 
+    @api.onchange('equipement_id')
+    def _onchange_equipement_id(self):
+        """Pré-remplit le client depuis la machine choisie."""
+        if self.equipement_id and self.equipement_id.partner_id:
+            self.partner_id = self.equipement_id.partner_id
+
     @api.constrains('date_start', 'date_expiration')
     def _check_dates(self):
         for rec in self:

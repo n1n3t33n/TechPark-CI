@@ -248,6 +248,33 @@ class ItEquipement(models.Model):
                 vals['reference'] = self.env['ir.sequence'].next_by_code('it.equipement') or 'Nouveau'
         return super().create(vals_list)
 
+    def write(self, vals):
+        res = super().write(vals)
+        # Clôture des alertes devenues obsolètes
+        if 'date_fin_garantie' in vals:
+            # Garantie modifiée (souvent prolongée) → l'alerte sera recréée au
+            # prochain scan si elle est toujours d'actualité.
+            self._fermer_alertes(['garantie'])
+        if vals.get('state') == 'retire':
+            # Un équipement retiré ne doit plus générer d'alertes garantie/location
+            self._fermer_alertes(['garantie', 'location'])
+        elif 'state' in vals and vals['state'] != 'location':
+            # Fin de location (ou autre transition) → l'alerte de location
+            # n'a plus lieu d'être.
+            self._fermer_alertes(['location'])
+        return res
+
+    def _fermer_alertes(self, types):
+        """Marque comme traitées les alertes ouvertes de ces équipements
+        pour les types donnés."""
+        alertes = self.env['it.alerte'].search([
+            ('equipement_id', 'in', self.ids),
+            ('type_alerte', 'in', types),
+            ('state', '!=', 'traitee'),
+        ])
+        if alertes:
+            alertes.write({'state': 'traitee'})
+
     # ─── Transitions du workflow ──────────────────────────────────────────────
     def action_affecter(self):
         for rec in self:

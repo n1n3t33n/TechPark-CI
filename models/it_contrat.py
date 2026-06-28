@@ -69,6 +69,15 @@ class ItContrat(models.Model):
         if self.site_id and self.site_id.partner_id != self.partner_id:
             self.site_id = False
 
+    @api.onchange('equipement_id')
+    def _onchange_equipement_id(self):
+        """Pré-remplit le client et le site depuis l'équipement choisi."""
+        if self.equipement_id:
+            if self.equipement_id.partner_id:
+                self.partner_id = self.equipement_id.partner_id
+            if self.equipement_id.site_id:
+                self.site_id = self.equipement_id.site_id
+
     @api.depends('date_fin')
     def _compute_jours_restants(self):
         today = date.today()
@@ -98,8 +107,18 @@ class ItContrat(models.Model):
             a_expirer.write({'state': 'expire'})
         return True
 
+    def _fermer_alertes(self):
+        """Marque comme traitées les alertes ouvertes liées à ces contrats."""
+        alertes = self.env['it.alerte'].search([
+            ('contrat_id', 'in', self.ids),
+            ('state', '!=', 'traitee'),
+        ])
+        if alertes:
+            alertes.write({'state': 'traitee'})
+
     def action_resilier(self):
         self.state = 'resilie'
+        self._fermer_alertes()
 
     def action_ouvrir_renouvellement(self):
         """Ouvre le wizard de renouvellement pré-rempli pour ce contrat."""

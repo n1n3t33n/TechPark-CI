@@ -12,6 +12,7 @@
                 <field name="type_alerte"/>
                 <field name="equipement_id"/>
                 <field name="contrat_id"/>
+                <field name="license_id" optional="show"/>
                 <field name="date_echeance"/>
                 <field name="jours_restants"/>
                 <field name="state" widget="badge"
@@ -45,6 +46,7 @@
                         <group string="Concerné">
                             <field name="equipement_id"/>
                             <field name="contrat_id"/>
+                            <field name="license_id"/>
                         </group>
                     </group>
                     <group string="Message">
@@ -66,6 +68,8 @@
                 <filter string="Non traitées" name="non_traitee" domain="[('state','!=','traitee')]"/>
                 <filter string="Garantie"     name="garantie"    domain="[('type_alerte','=','garantie')]"/>
                 <filter string="Contrat"      name="contrat"     domain="[('type_alerte','=','contrat')]"/>
+                <filter string="Licence"      name="licence"     domain="[('type_alerte','=','licence')]"/>
+                <filter string="Location"     name="location"    domain="[('type_alerte','=','location')]"/>
                 <group expand="0" string="Regrouper par">
                     <filter string="Type"  name="by_type"  context="{'group_by':'type_alerte'}"/>
                     <filter string="État"  name="by_state" context="{'group_by':'state'}"/>

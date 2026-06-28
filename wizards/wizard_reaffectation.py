@@ -83,12 +83,14 @@ class WizardReaffectation(models.TransientModel):
             'active_line':    True,
         })
 
-        # 3. Mettre à jour l'équipement
-        equipement.write({
-            'employe_id':    self.nouvel_employe_id.id,
-            'departement_id':self.nouveau_departement_id.id,
-            'state':         'affecte',
-        })
+        # 3. Mettre à jour l'équipement (sans écraser un état maintenance/location)
+        vals = {
+            'employe_id':     self.nouvel_employe_id.id,
+            'departement_id': self.nouveau_departement_id.id,
+        }
+        if equipement.state == 'brouillon':
+            vals['state'] = 'affecte'
+        equipement.write(vals)
 
         # 4. Log dans le chatter
         equipement.message_post(

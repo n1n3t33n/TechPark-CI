@@ -88,6 +88,68 @@ class WizardScanAlertes(models.TransientModel):
                     existante.jours_restants = jours
                     alertes_ignorees += 1
 
+        # ── 3. Scanner les licences logicielles ───────────────────────────
+        licences = self.env['it.license'].search([
+            ('date_expiration', '!=', False),
+        ])
+        for lic in licences:
+            jours = (lic.date_expiration - today).days
+            if jours <= self.delai_jours:
+                existante = self.env['it.alerte'].search([
+                    ('license_id', '=', lic.id),
+                    ('type_alerte', '=', 'licence'),
+                    ('state', '!=', 'traitee'),
+                ], limit=1)
+                if not existante:
+                    self.env['it.alerte'].create({
+                        'name': f"Licence expirant bientôt : {lic.name}",
+                        'type_alerte': 'licence',
+                        'license_id': lic.id,
+                        'equipement_id': lic.equipement_id.id or False,
+                        'date_echeance': lic.date_expiration,
+                        'jours_restants': jours,
+                        'message': (
+                            f"La licence '{lic.name}'"
+                            f"{' (' + lic.partner_id.name + ')' if lic.partner_id else ''} "
+                            f"expire dans {jours} jour(s), le {lic.date_expiration}."
+                        ),
+                    })
+                    alertes_crees += 1
+                else:
+                    existante.jours_restants = jours
+                    alertes_ignorees += 1
+
+        # ── 4. Scanner les fins de location d'équipements ──────────────────
+        locations = self.env['it.equipement'].search([
+            ('state', '=', 'location'),
+            ('date_fin_location', '!=', False),
+        ])
+        for eq in locations:
+            jours = (eq.date_fin_location - today).days
+            if jours <= self.delai_jours:
+                existante = self.env['it.alerte'].search([
+                    ('equipement_id', '=', eq.id),
+                    ('type_alerte', '=', 'location'),
+                    ('state', '!=', 'traitee'),
+                ], limit=1)
+                if not existante:
+                    self.env['it.alerte'].create({
+                        'name': f"Fin de location proche : {eq.name}",
+                        'type_alerte': 'location',
+                        'equipement_id': eq.id,
+                        'date_echeance': eq.date_fin_location,
+                        'jours_restants': jours,
+                        'message': (
+                            f"La location de '{eq.name}'"
+                            f"{' par ' + eq.locataire_id.name if eq.locataire_id else ''} "
+                            f"se termine dans {jours} jour(s), le {eq.date_fin_location}."
+                        ),
+                    })
+                    alertes_crees += 1
+                else:
+                    existante.jours_restants = jours
+                    alertes_ignorees += 1
+
         rapport = (
             f"✅ Nouvelles alertes créées : {alertes_crees}\n"
             f"ℹ️  Alertes déjà existantes  : {alertes_ignorees}\n"

@@ -5,8 +5,8 @@
         <field name="model">it.ticket</field>
         <field name="arch" type="xml">
             <list string="Tickets"
-                  decoration-danger="priority == '3'"
-                  decoration-warning="state in ('new','assigned','in_progress')"
+                  decoration-danger="en_retard or priority == '3'"
+                  decoration-warning="state in ('new','assigned','in_progress') and not en_retard"
                   decoration-success="state == 'done'">
                 <field name="name"/>
                 <field name="subject"/>
@@ -17,6 +17,7 @@
                 <field name="priority" widget="badge"/>
                 <field name="state" widget="badge"/>
                 <field name="date_deadline"/>
+                <field name="en_retard" widget="boolean_toggle" optional="show"/>
             </list>
         </field>
     </record>
@@ -53,6 +54,7 @@
                             <field name="priority"/>
                             <field name="technicien_id"/>
                             <field name="date_deadline"/>
+                            <field name="en_retard"/>
                         </group>
                     </group>
                     <notebook>
@@ -80,6 +82,7 @@
                 <field name="site_id"/>
                 <field name="equipement_id"/>
                 <filter string="Ouverts" name="open" domain="[('state','in',('new','assigned','in_progress'))]"/>
+                <filter string="En retard (SLA)" name="late" domain="[('en_retard','=',True)]"/>
                 <filter string="Critiques" name="critical" domain="[('priority','=','3')]"/>
                 <filter string="Résolus" name="done" domain="[('state','=','done')]"/>
                 <group expand="0" string="Regrouper par">

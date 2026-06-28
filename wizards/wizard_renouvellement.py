@@ -49,6 +49,8 @@ class WizardRenouvellement(models.TransientModel):
             'montant':  self.nouveau_montant or contrat.montant,
             'state':    'renouvele',
         })
+        # Clôturer les alertes d'expiration de ce contrat (devenues obsolètes)
+        contrat._fermer_alertes()
         contrat.message_post(
             body=f"Contrat renouvelé jusqu'au <b>{self.nouvelle_date_fin}</b>. "
                  f"Nouveau montant : {self.nouveau_montant or contrat.montant} FCFA. "
